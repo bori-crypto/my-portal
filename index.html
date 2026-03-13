@@ -1,348 +1,405 @@
-<!DOCTYPE html> <!-- 브라우저에게 이 문서가 HTML5 최신 표준 문법으로 작성되었음을 알려주어 화면이 깨지지 않게 합니다. -->
-<html lang="ko"> <!-- 시각 장애인용 리더기나 검색 엔진이 이 문서가 한국어 기반임을 알 수 있도록 언어를 설정합니다. -->
-<head> <!-- 사용자의 눈에는 보이지 않지만 웹페이지의 설정, 폰트, 스타일 등을 정의하는 머리 부분입니다. -->
-    <meta charset="UTF-8"> <!-- 한글, 이모지 등 전 세계 모든 문자가 깨짐 없이 정상적으로 출력되도록 UTF-8 인코딩을 적용합니다. -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 모바일 기기에서도 화면 너비가 디바이스에 맞게 자동 조절되도록 뷰포트를 설정합니다. -->
-    <title>나만의 포털 V2</title> <!-- 브라우저 탭에 표시될 우리 프로젝트의 공식 이름입니다. -->
+<!DOCTYPE html> <!-- HTML5 표준 문서 선언: 브라우저가 화면을 정확하게 그리도록 돕습니다. -->
+<html lang="ko"> <!-- 문서의 주 언어를 한국어로 설정합니다. -->
+<head> <!-- 페이지 설정, 폰트, 스타일 등을 정의하는 머리 부분입니다. -->
+    <meta charset="UTF-8"> <!-- 모든 글자가 깨짐 없이 표시되도록 유니코드 인코딩을 적용합니다. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 모바일 기기에 맞춰 화면 크기를 조절합니다. -->
+    <title>나만의 포털 V2</title> <!-- 브라우저 상단 탭 제목입니다. -->
     
-    <!-- 오빠가 요청한 프리텐다드 폰트를 외부에서 불러옵니다. 웹 폰트를 사용하여 어느 기기에서나 동일하고 깔끔한 글씨체를 보여주기 위함입니다. -->
+    <!-- 프리텐다드 폰트 로드: 깔끔하고 가독성이 좋은 서체를 적용합니다. -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
-    <style> /* HTML 문서 안에서 디자인(CSS)을 정의하기 위해 스타일 태그를 엽니다. 단일 파일 규칙을 지키기 위함입니다. */
+    <style> /* CSS 디자인 영역: 단일 파일 원칙에 따라 모든 디자인을 여기에 작성합니다. */
         
-        :root { /* 문서 전체에서 재사용할 테마 색상들을 변수로 선언하여, 나중에 색상을 바꿀 때 한 곳에서만 수정하면 되도록 효율성을 높입니다. */
-            --bg-color: #0f172a; /* 다크 모드의 깊이감을 주기 위해 배경색을 아주 어두운 슬레이트(남색 계열)로 설정합니다. */
-            --glass-bg: rgba(255, 255, 255, 0.05); /* 글래스모피즘의 핵심인 '반투명한 흰색' 배경입니다. 5%의 불투명도만 줍니다. */
-            --glass-border: rgba(255, 255, 255, 0.1); /* 유리 타일의 테두리를 미세하게 빛나게 보이도록 10% 불투명도의 흰색 선을 씁니다. */
-            --text-main: #f8fafc; /* 어두운 배경에서 글씨가 잘 보이도록 눈이 안 아픈 밝은 회색(거의 흰색)을 주 텍스트 색으로 씁니다. */
-            --text-muted: #94a3b8; /* 부가 설명 등 덜 중요한 텍스트는 시선이 분산되지 않게 조금 더 어두운 회색으로 처리합니다. */
+        :root { /* 테마 색상 변수 정의: 유지보수를 편하게 만듭니다. */
+            --bg-color: #0f172a; /* 전체 배경: 깊은 밤의 남색 */
+            --glass-bg: rgba(255, 255, 255, 0.05); /* 글래스모피즘용 반투명 배경 */
+            --glass-border: rgba(255, 255, 255, 0.1); /* 유리 테두리 */
+            --text-main: #f8fafc; /* 주 텍스트 색상 */
+            --text-muted: #94a3b8; /* 보조 텍스트 색상 */
             
-            /* 오빠가 기획한 4구역의 테마 컬러 변수들입니다. 각 구역의 포인트 색상으로 사용됩니다. */
-            --color-a: #22c55e; /* [A구역] 날씨/할일: 차분 말차색 (생산성을 높여주는 초록색) */
-            --color-b: #f59e0b; /* [B구역] 나의 유니버스: 황금 앰버색 (따뜻한 일상의 기록) */
-            --color-c: #a855f7; /* [C구역] 엑기스 뉴스: 우주 라벤더색 (창의적인 정보 습득) */
-            --color-d: #6366f1; /* [D구역] 개발자 패널: 심해 파랑색 (안정적인 시스템 관리) */
+            /* 구역별 테마 컬러: 오빠가 정해준 색상입니다. */
+            --color-a: #22c55e; /* [A구역] 날씨 & To-do: 말차 초록 */
+            --color-b: #f59e0b; /* [B구역] 나의 유니버스: 앰버 황금 */
+            --color-c: #a855f7; /* [C구역] 엑기스 뉴스: 라벤더 보라 */
+            --color-d: #6366f1; /* [D구역] 개발자 패널: 심해 파랑 */
         }
 
-        * { /* 웹페이지의 모든 요소에 공통으로 적용될 기본 규칙을 설정합니다. */
-            box-sizing: border-box; /* 패딩과 테두리 두께가 요소의 전체 너비/높이에 포함되도록 하여 크기 계산의 혼란을 막습니다. (필수 기본기!) */
-            margin: 0; /* 브라우저가 기본으로 제공하는 외부 여백을 없애서 내가 의도한 대로만 배치되게 합니다. */
-            padding: 0; /* 브라우저가 기본으로 제공하는 내부 여백을 없애바닥부터 다시 잡습니다. */
-            font-family: 'Pretendard', sans-serif; /* 모든 글씨체를 프리텐다드로 통일하고, 만약 로딩 실패 시 기본 고딕(sans-serif)을 씁니다. */
+        * { /* 초기화 설정: 브라우저 기본 여백을 지웁니다. */
+            box-sizing: border-box; /* 패딩이 너비에 포함되게 설정 */
+            margin: 0; padding: 0;
+            font-family: 'Pretendard', sans-serif;
         }
 
-        body { /* 눈에 보이는 화면 전체의 기본 배경과 배치를 설정합니다. */
-            background-color: var(--bg-color); /* 미리 만들어둔 어두운 배경색 변수를 가져와서 다크 모드를 완성합니다. */
-            color: var(--text-main); /* 전체 글씨 색상을 밝은 색으로 설정합니다. */
-            min-height: 100vh; /* 화면의 내용이 적더라도 배경색이 브라우저 창 높이의 100%를 꽉 채우도록 보장합니다. */
-            display: flex; /* 화면 중앙에 벤토 박스를 배치하기 위해 Flexbox 레이아웃 모델을 켭니다. */
-            justify-content: center; /* 가로 기준으로 내용물을 화면의 정중앙에 배치합니다. */
-            align-items: center; /* 세로 기준으로 내용물을 화면의 정중앙에 배치합니다. */
-            padding: 20px; /* 화면이 좁아졌을 때 벤토 박스가 브라우저 가장자리에 딱 붙지 않도록 여유 공간을 줍니다. */
-            overflow-x: hidden; /* 가로 스크롤바가 생겨서 화면이 흔들리는 것을 방지합니다. */
+        body { /* 배경색 적용 및 중앙 정렬 레이아웃 */
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
-        .bento-container { /* 4개의 구역을 담을 큰 바구니(그리드 시스템)를 설정합니다. */
-            display: grid; /* 요소들을 격자(바둑판) 형태로 배치하기 위해 CSS Grid 기술을 사용합니다. */
-            grid-template-columns: 1fr; /* 모바일(기본)에서는 1개의 열(Column)로 위에서 아래로 쌓이게 뼈대를 잡습니다. */
-            gap: 20px; /* 타일과 타일 사이에 20px의 일정한 숨구멍(간격)을 뚫어줍니다. */
-            width: 100%; /* 부모(body)의 너비를 꽉 채웁니다. */
-            max-width: 1000px; /* 데스크탑 모니터에서 너무 넓게 퍼지지 않도록 최대 너비를 1000px로 제한합니다. */
+        .bento-container { /* 벤토 박스 그리드 레이아웃 */
+            display: grid;
+            grid-template-columns: 1fr; /* 모바일: 1줄 */
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
         }
 
-        @media (min-width: 768px) { /* 브라우저 너비가 768px 이상(태블릿, 데스크탑)일 때만 작동하는 반응형 규칙입니다. */
-            .bento-container { /* 큰 화면이 되었을 때 벤토 컨테이너의 모양을 변경합니다. */
-                grid-template-columns: repeat(2, 1fr); /* 열을 2개로 나누어 오빠가 원했던 '2x2 벤토 박스' 형태로 변신시킵니다. */
-            }
+        @media (min-width: 768px) { /* PC 버전: 2x2 그리드 구조 */
+            .bento-container { grid-template-columns: repeat(2, 1fr); }
         }
 
-        .bento-item { /* 개별 타일(A, B, C, D 구역)에 적용될 공통 글래스모피즘 디자인입니다. */
-            background: var(--glass-bg); /* 반투명한 배경을 적용하여 뒷배경이 살짝 비치게 합니다. */
-            backdrop-filter: blur(16px); /* 글래스모피즘의 핵심! 배경 너머를 흐리게 처리하여 진짜 유리처럼 만듭니다. */
-            -webkit-backdrop-filter: blur(16px); /* 구형 사파리 브라우저 호환성을 챙깁니다. */
-            border: 1px solid var(--glass-border); /* 유리의 반사광 느낌을 주기 위해 미세한 테두리를 두릅니다. */
-            border-radius: 24px; /* 타일의 모서리를 둥글둥글하게 깎아줍니다. */
-            padding: 30px; /* 타일 안쪽 공간을 넉넉히 줍니다. */
-            height: 300px; /* 각 타일 높이를 300px로 고정하여 예쁜 비율을 만듭니다. */
-            cursor: pointer; /* 클릭 가능하다는 것을 알려주기 위해 커서를 손가락 모양으로 바꿉니다. */
-            transition: transform 0.3s ease, box-shadow 0.3s ease; /* 호버 시 부드러운 움직임을 줍니다. */
-            display: flex; /* 내부 내용 배치를 위해 Flexbox를 사용합니다. */
-            flex-direction: column; /* 세로로 배치합니다. */
-            position: relative; /* 자식 요소의 배치 기준점입니다. */
-            overflow: hidden; /* 내용이 튀어나가면 잘라냅니다. */
+        .bento-item { /* 타일 공통 글래스모피즘 스타일 */
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 24px;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .bento-item:hover { /* 타일에 마우스를 올렸을 때의 반응입니다. */
-            transform: translateY(-5px); /* 위로 살짝 떠오르는 느낌입니다. */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* 입체적인 그림자를 만듭니다. */
+        .bento-item:hover { /* 마우스를 올렸을 때 떠오르는 효과 */
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
-        .bento-title { /* 타일 내부 제목 스타일입니다. */
-            font-size: 1.5rem; /* 글씨를 키워 강조합니다. */
-            font-weight: 700; /* 굵게 설정합니다. */
-            margin-bottom: 10px; /* 아래 간격을 줍니다. */
-            display: flex; /* 아이콘과 텍스트를 나란히 둡니다. */
-            align-items: center; /* 세로 중앙 정렬입니다. */
-            gap: 10px; /* 사이 간격입니다. */
+        .bento-title { /* 타일 제목 스타일 */
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .zone-indicator { /* 구역별 테마 컬러 점입니다. */
-            width: 12px; height: 12px;
-            border-radius: 50%; /* 완벽한 원형입니다. */
+        .zone-indicator { /* 구역 표시 작은 점 */
+            width: 8px; height: 8px;
+            border-radius: 50%;
         }
 
-        /* 구역별 인디케이터 색상 및 그림자 효과입니다. */
+        /* 각 구역별 포인트 컬러 인디케이터 */
         #zone-a .zone-indicator { background-color: var(--color-a); box-shadow: 0 0 10px var(--color-a); }
         #zone-b .zone-indicator { background-color: var(--color-b); }
         #zone-c .zone-indicator { background-color: var(--color-c); }
         #zone-d .zone-indicator { background-color: var(--color-d); }
 
-        .bento-desc { /* 요약 설명 텍스트입니다. */
-            color: var(--text-muted); /* 흐린 색상으로 조절합니다. */
-            font-size: 0.95rem; /* 약간 작게 만듭니다. */
-            line-height: 1.5; /* 줄 간격을 넓힙니다. */
+        .bento-desc { /* V1 복귀 설명 텍스트 스타일 */
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
         }
+
+        /* --- [A구역 전용 레이아웃: 좌측 날씨 / 우측 To-do] --- */
+        .a-zone-body {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* [좌측] 기상청 실제 날씨 영역 */
+        .weather-section {
+            flex: 1; height: 100%;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .weather-val { font-size: 1.8rem; font-weight: 800; color: var(--color-a); } /* 기온 수치 */
+        .weather-icon { font-size: 2.2rem; margin-bottom: 5px; } /* 날씨 아이콘 */
+        .weather-label { font-size: 0.8rem; color: var(--text-muted); } /* 설명 문구 */
+
+        /* [우측] To-do 일정 버튼 영역 */
+        .todo-section { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+        .todo-icon-btn { /* 일정을 여는 아이콘 버튼 */
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px;
+            width: 80px; height: 80px; display: flex; justify-content: center; align-items: center;
+            cursor: pointer; transition: all 0.3s ease; color: var(--color-a);
+        }
+
+        .todo-icon-btn:hover { background: rgba(34, 197, 94, 0.1); transform: translateY(-3px); border-color: var(--color-a); }
+
+        .todo-label { margin-top: 10px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
 
         /* --- [모달 팝업 디자인] --- */
-        .modal-overlay { /* 배경 어두운 막입니다. */
-            position: fixed; /* 화면 고정입니다. */
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.6); /* 60% 암전 효과입니다. */
-            display: flex; /* 중앙 배치를 위해 Flex를 씁니다. */
-            justify-content: center; align-items: center;
-            z-index: 1000; /* 최상단 배치입니다. */
-            opacity: 0; visibility: hidden; /* 초기엔 숨김 처리합니다. */
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-            backdrop-filter: blur(5px); /* 배경을 흐릿하게 만듭니다. */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.7);
+            display: flex; justify-content: center; align-items: center; z-index: 1000;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(8px);
         }
 
-        .modal-overlay.active { /* 활성화 시 보여줍니다. */
-            opacity: 1; visibility: visible;
-        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
 
-        .modal-content { /* 모달 본체입니다. */
-            background: rgba(30, 41, 59, 0.8); /* 진한 반투명 배경입니다. */
-            backdrop-filter: blur(20px); /* 강력한 블러 효과입니다. */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            width: 90%; max-width: 600px; max-height: 80vh;
-            padding: 30px;
-            transform: translateY(20px) scale(0.95); /* 나타날 때 애니메이션 시작점입니다. */
+        .modal-content {
+            background: #1e293b; border: 1px solid var(--glass-border); border-radius: 24px;
+            width: 95%; max-width: 450px; padding: 25px; transform: scale(0.9);
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex; flex-direction: column;
         }
 
-        .modal-overlay.active .modal-content { /* 활성화 시 애니메이션 도착점입니다. */
-            transform: translateY(0) scale(1);
-        }
+        .modal-overlay.active .modal-content { transform: scale(1); }
 
-        .modal-header { /* 제목과 닫기 버튼 영역입니다. */
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 20px; padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .modal-close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
 
-        .modal-close-btn { /* X 닫기 버튼입니다. */
-            background: none; border: none;
-            color: var(--text-muted); font-size: 1.5rem;
-            cursor: pointer; transition: color 0.2s;
-        }
+        /* To-do 입력 및 리스트 스타일 */
+        .todo-input-group { display: flex; gap: 8px; margin-bottom: 20px; }
+        .todo-input { flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 10px; padding: 12px; color: white; outline: none; }
+        .todo-add-btn { background: var(--color-a); border: none; border-radius: 10px; padding: 0 15px; font-weight: 700; cursor: pointer; color: #000; }
+        .todo-list { list-style: none; display: flex; flex-direction: column; gap: 8px; max-height: 150px; overflow-y: auto; margin-bottom: 20px; }
+        .calendar-list { list-style: none; display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; }
+        
+        /* 암호 보안 구역 스타일 */
+        .secret-key-group { background: rgba(34, 197, 94, 0.05); padding: 10px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(34, 197, 94, 0.1); }
 
-        .modal-close-btn:hover { color: white; }
-
-        .modal-body { /* 내용 영역이며 스크롤 가능하게 합니다. */
-            overflow-y: auto; padding-right: 10px;
-        }
-
-        /* 스크롤바 커스텀 디자인입니다. */
-        .modal-body::-webkit-scrollbar { width: 6px; }
-        .modal-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-
-        /* --- [A구역: 할 일 기능 디자인] --- */
-        .todo-input-group { /* 입력창 그룹입니다. */
-            display: flex; gap: 10px; margin-bottom: 20px;
-        }
-
-        .todo-input { /* 텍스트 입력 칸입니다. */
-            flex: 1; background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px; padding: 12px 15px;
-            color: white; outline: none; transition: border-color 0.3s;
-        }
-
-        .todo-input:focus { border-color: var(--color-a); }
-
-        .todo-add-btn { /* 추가 버튼입니다. */
-            background-color: var(--color-a); color: #000;
-            border: none; border-radius: 12px;
-            padding: 0 20px; font-weight: 600; cursor: pointer;
-        }
-
-        .todo-list { /* 리스트 부모입니다. */
-            list-style: none; display: flex; flex-direction: column; gap: 10px;
-        }
-
-        .todo-item { /* 개별 항목입니다. */
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255, 255, 255, 0.03); border-radius: 10px;
-            padding: 12px 15px; transition: all 0.2s;
-        }
-
-        .todo-item:hover { background: rgba(255, 255, 255, 0.08); }
-
-        .todo-text-wrap { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-
-        .todo-checkbox { /* 커스텀 체크박스입니다. */
-            appearance: none; width: 20px; height: 20px;
-            border: 2px solid var(--text-muted); border-radius: 50%;
-            cursor: pointer; position: relative; transition: all 0.2s;
-        }
-
-        .todo-checkbox:checked { background-color: var(--color-a); border-color: var(--color-a); }
-
-        .todo-checkbox:checked::after { /* 체크 모양 그리기입니다. */
-            content: ''; position: absolute; top: 50%; left: 50%;
-            width: 5px; height: 10px; border: solid #000;
-            border-width: 0 2px 2px 0; transform: translate(-50%, -60%) rotate(45deg);
-        }
-
-        .todo-item.completed .todo-text { /* 완료된 텍스트입니다. */
-            color: var(--text-muted); text-decoration: line-through;
-        }
-
-        .todo-delete-btn { /* 삭제 버튼입니다. */
-            background: none; border: none; color: #ef4444;
-            cursor: pointer; opacity: 0.5; transition: opacity 0.2s;
-        }
-
-        .todo-item:hover .todo-delete-btn { opacity: 1; }
+        .todo-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; }
+        .calendar-item { display: flex; flex-direction: column; background: rgba(34, 197, 94, 0.05); padding: 12px; border-radius: 12px; border-left: 4px solid var(--color-a); }
+        
+        .todo-text { font-size: 0.95rem; }
+        .completed .todo-text { text-decoration: line-through; color: var(--text-muted); }
+        .todo-delete-btn { color: #f43f5e; background: none; border: none; cursor: pointer; font-size: 0.8rem; }
+        
+        .todo-time { font-size: 0.75rem; color: var(--color-a); margin-bottom: 4px; font-weight: 600; }
+        .section-title { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .loading-text { text-align: center; color: var(--text-muted); padding: 10px; font-size: 0.8rem; }
 
     </style>
 </head>
 <body>
 
-    <div class="bento-container">
-        <!-- [A구역] 날씨 & 할 일 타일 -->
+    <div class="bento-container"> <!-- 전체 구역 바구니 -->
+        
+        <!-- [A구역] 날씨 & To-do: 기상청 API 및 구글 일정 통합 -->
         <div class="bento-item" id="zone-a">
             <div class="bento-title">
                 <div class="zone-indicator"></div>
-                오늘의 작전 기지
+                날씨 & To-do
             </div>
-            <div class="bento-desc">
-                지금 바로 처리해야 할 미션들을 확인하고 추가하세요. <br><br>
-                <span style="color: var(--color-a);">클릭해서 미션 목록 열기 👉</span>
+            
+            <div class="a-zone-body">
+                <!-- 좌측: 기상청 실시간 정보가 표시됩니다. -->
+                <div class="weather-section" id="weather-area">
+                    <div id="w-icon" class="weather-icon">⌛</div>
+                    <div id="w-temp" class="weather-val">--</div>
+                    <div class="weather-label">현재 기온</div>
+                </div>
+
+                <!-- 우측: 오늘의 일정을 확인하는 버튼입니다. -->
+                <div class="todo-section">
+                    <div class="todo-icon-btn" id="open-todo-btn">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 11l3 3L22 4"></path>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                        </svg>
+                    </div>
+                    <div class="todo-label">오늘의 일정</div>
+                </div>
             </div>
         </div>
 
-        <!-- [B, C, D 구역] 레이아웃용 자리 표시입니다. -->
+        <!-- [B구역] 나의 유니버스 (V1 복구) -->
         <div class="bento-item" id="zone-b">
-            <div class="bento-title"><div class="zone-indicator"></div>나의 유니버스</div>
-            <div class="bento-desc">Notion 연동 대기 중입니다.</div>
+            <div class="bento-title">
+                <div class="zone-indicator"></div>
+                나의 유니버스
+            </div>
+            <div class="bento-desc">일상과 사진이 담길 공간입니다.</div>
         </div>
+
+        <!-- [C구역] 엑기스 뉴스 (V1 복구) -->
         <div class="bento-item" id="zone-c">
-            <div class="bento-title"><div class="zone-indicator"></div>엑기스 뉴스</div>
-            <div class="bento-desc">RSS 연동 대기 중입니다.</div>
+            <div class="bento-title">
+                <div class="zone-indicator"></div>
+                엑기스 뉴스
+            </div>
+            <div class="bento-desc">관심 있는 RSS 피드가 연동될 예정입니다.</div>
         </div>
+
+        <!-- [D구역] 개발자 패널 (V1 복구) -->
         <div class="bento-item" id="zone-d">
-            <div class="bento-title"><div class="zone-indicator"></div>개발자 패널</div>
-            <div class="bento-desc">시스템 모니터링 대기 중입니다.</div>
+            <div class="bento-title">
+                <div class="zone-indicator"></div>
+                개발자 패널
+            </div>
+            <div class="bento-desc">서버 상태와 도구들을 배치합니다.</div>
         </div>
     </div>
 
-    <!-- [A구역 상세 모달] -->
+    <!-- [A구역 모달] 일정 및 할 일 관리 창 -->
     <div class="modal-overlay" id="modal-a">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="bento-title" style="margin-bottom:0;">
-                    <div class="zone-indicator" style="background-color: var(--color-a); box-shadow: 0 0 10px var(--color-a);"></div>
-                    오늘의 미션 (To-Do)
+                <div class="bento-title" style="margin-bottom:0; font-size: 1rem;">
+                    <div class="zone-indicator" style="background-color: var(--color-a);"></div>
+                    미션 및 일정 관리
                 </div>
                 <button class="modal-close-btn" id="close-modal-a">✕</button>
             </div>
+            
             <div class="modal-body">
+                <!-- 보안 암호 설정 영역 -->
+                <div class="secret-key-group">
+                    <div style="font-size: 0.75rem; color: var(--color-a); margin-bottom: 5px;">🗝️ 포털 암호 설정 (GAS 연동용)</div>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="password" id="gas-secret-input" class="todo-input" style="padding: 8px;" placeholder="암호를 입력하세요">
+                        <button class="todo-add-btn" id="save-secret-btn" style="padding: 0 10px; font-size: 0.8rem;">저장</button>
+                    </div>
+                </div>
+
+                <!-- ⭐ [할 일 입력창] 여기서 할 일을 직접 추가하세요! -->
                 <div class="todo-input-group">
-                    <input type="text" id="todo-input" class="todo-input" placeholder="새로운 미션을 입력하세요">
+                    <input type="text" id="todo-input" class="todo-input" placeholder="새로운 미션을 직접 입력하세요">
                     <button class="todo-add-btn" id="todo-add-btn">추가</button>
                 </div>
+
+                <!-- 수동 할 일 리스트 (로컬스토리지 저장) -->
                 <ul class="todo-list" id="todo-list"></ul>
+
+                <!-- 구글 캘린더 일정 리스트 -->
+                <div class="section-title">Google Calendar 일정 (최근 7일)</div>
+                <ul class="calendar-list" id="calendar-list">
+                    <div class="loading-text">암호를 저장하면 일정을 불러옵니다.</div>
+                </ul>
             </div>
         </div>
     </div>
 
-    <script>
-        // DOM 요소들을 선택합니다.
-        const zoneA = document.getElementById('zone-a');
+    <script> /* 자바스크립트 영역: 기상청 좌표 변환 및 데이터 통신 로직 */
+        
+        // --- [설정] 오빠의 구글 앱 스크립트(GAS) URL ---
+        const GAS_APP_URL = 'https://script.google.com/macros/s/AKfycbzbyEwnDASgOmCMFzDEn6FbP3tP4yc9tXNsPchemQipFgB5zcOB30vZo3Dmq44FyvY2Tg/exec'; 
+
+        // --- DOM 요소 선택 ---
+        const openTodoBtn = document.getElementById('open-todo-btn');
         const modalA = document.getElementById('modal-a');
         const closeModalBtn = document.getElementById('close-modal-a');
         const todoInput = document.getElementById('todo-input');
         const todoAddBtn = document.getElementById('todo-add-btn');
         const todoList = document.getElementById('todo-list');
+        const calendarList = document.getElementById('calendar-list');
+        const secretInput = document.getElementById('gas-secret-input');
+        const saveSecretBtn = document.getElementById('save-secret-btn');
 
-        let todos = []; // 할 일 데이터를 저장할 배열입니다.
-
-        // 모달 열기/닫기 이벤트입니다.
-        zoneA.addEventListener('click', () => { 
-            modalA.classList.add('active'); 
-            todoInput.focus(); 
+        // --- 모달 제어 로직 ---
+        openTodoBtn.addEventListener('click', () => { 
+            modalA.classList.add('active');
+            todoInput.focus();
+            const savedKey = localStorage.getItem('v2_gas_secret');
+            if (savedKey) {
+                secretInput.value = savedKey;
+                fetchCalendarEvents(); 
+            }
         });
-        closeModalBtn.addEventListener('click', () => modalA.classList.remove('active'));
+
+        closeModalBtn.addEventListener('click', () => { modalA.classList.remove('active'); });
         modalA.addEventListener('click', (e) => { if (e.target === modalA) modalA.classList.remove('active'); });
 
-        // 로컬스토리지 저장 기능입니다. (비용 0원 서버리스의 핵심!)
-        function saveTodos() { localStorage.setItem('myPortalTodos', JSON.stringify(todos)); }
+        // --- PART 0: 보안 및 수동 할 일 (localStorage 기반) ---
+        saveSecretBtn.addEventListener('click', () => {
+            const key = secretInput.value.trim();
+            if (key) {
+                localStorage.setItem('v2_gas_secret', key);
+                fetchCalendarEvents();
+                initWeather(); // 암호 저장 시 날씨도 새로고침
+            }
+        });
 
-        // 로컬스토리지 불러오기 기능입니다.
-        function loadTodos() {
-            const saved = localStorage.getItem('myPortalTodos');
-            if (saved) { todos = JSON.parse(saved); renderTodos(); }
-        }
-
-        // 화면에 할 일 리스트를 그리는 기능입니다.
+        let todos = JSON.parse(localStorage.getItem('v2_portal_todos')) || [];
+        function save() { localStorage.setItem('v2_portal_todos', JSON.stringify(todos)); }
         function renderTodos() {
             todoList.innerHTML = '';
-            todos.forEach((todo, index) => {
+            todos.forEach((todo, idx) => {
                 const li = document.createElement('li');
                 li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
-                li.innerHTML = `
-                    <label class="todo-text-wrap">
-                        <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${index})">
-                        <span class="todo-text">${todo.text}</span>
-                    </label>
-                    <button class="todo-delete-btn" onclick="deleteTodo(${index})">지우기</button>
-                `;
+                li.innerHTML = `<div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="toggle(${idx})"><input type="checkbox" ${todo.completed ? 'checked' : ''} style="cursor:pointer;"><span class="todo-text">${todo.text}</span></div><button class="todo-delete-btn" onclick="del(${idx})">삭제</button>`;
                 todoList.appendChild(li);
             });
         }
+        function add() {
+            const val = todoInput.value.trim();
+            if (val) { todos.unshift({ text: val, completed: false }); todoInput.value = ''; save(); renderTodos(); }
+        }
+        window.toggle = (idx) => { todos[idx].completed = !todos[idx].completed; save(); renderTodos(); };
+        window.del = (idx) => { todos.splice(idx, 1); save(); renderTodos(); };
+        todoAddBtn.addEventListener('click', add);
+        todoInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') add(); });
 
-        // 할 일 추가 함수입니다.
-        function addTodo() {
-            const text = todoInput.value.trim();
-            if (text) {
-                todos.unshift({ text, completed: false });
-                todoInput.value = '';
-                saveTodos(); renderTodos();
-            }
+        // --- PART 1: 기상청 좌표 변환 수학 공식 (위경도 -> 격자 nx, ny) ---
+        function dfs_xy_conv(v1, v2) {
+            const RE = 6371.00877; const GRID = 5.0; const SLAT1 = 30.0; const SLAT2 = 60.0;
+            const OLON = 126.0; const OLAT = 38.0; const XO = 43; const YO = 136;
+            const DEGRAD = Math.PI / 180.0; const re = RE / GRID; const slat1 = SLAT1 * DEGRAD;
+            const slat2 = SLAT2 * DEGRAD; const olon = OLON * DEGRAD; const olat = OLAT * DEGRAD;
+            let sn = Math.tan(Math.PI * 0.25 + slat2 * 0.5) / Math.tan(Math.PI * 0.25 + slat1 * 0.5);
+            sn = Math.log(Math.cos(slat1) / Math.cos(slat2)) / Math.log(sn);
+            let sf = Math.tan(Math.PI * 0.25 + slat1 * 0.5);
+            sf = Math.pow(sf, sn) * Math.cos(slat1) / sn;
+            let ro = Math.tan(Math.PI * 0.25 + olat * 0.5);
+            ro = re * sf / Math.pow(ro, sn);
+            let ra = Math.tan(Math.PI * 0.25 + (v1) * DEGRAD * 0.5);
+            ra = re * sf / Math.pow(ra, sn);
+            let theta = v2 * DEGRAD - olon;
+            if (theta > Math.PI) theta -= 2.0 * Math.PI;
+            if (theta < -Math.PI) theta += 2.0 * Math.PI;
+            theta *= sn;
+            return { x: Math.floor(ra * Math.sin(theta) + XO + 0.5), y: Math.floor(ro - ra * Math.cos(theta) + YO + 0.5) };
         }
 
-        // 완료 상태 변경 함수입니다. (전역 호출을 위해 window에 할당)
-        window.toggleTodo = (index) => {
-            todos[index].completed = !todos[index].completed;
-            saveTodos(); renderTodos();
-        };
+        // --- PART 2: 기상청 및 캘린더 실시간 연동 ---
+        async function fetchCalendarEvents() {
+            const secretKey = localStorage.getItem('v2_gas_secret');
+            if (!secretKey) return;
+            try {
+                const response = await fetch(`${GAS_APP_URL}?key=${secretKey}`, { method: 'GET', mode: 'cors', redirect: 'follow' });
+                const data = await response.json();
+                if (data.error) { calendarList.innerHTML = `<div class="loading-text" style="color:#f43f5e;">${data.error}</div>`; return; }
+                renderCalendar(data);
+            } catch (error) { calendarList.innerHTML = '<div class="loading-text">일정 로드 실패</div>'; }
+        }
 
-        // 삭제 함수입니다.
-        window.deleteTodo = (index) => {
-            todos.splice(index, 1);
-            saveTodos(); renderTodos();
-        };
+        function renderCalendar(events) {
+            calendarList.innerHTML = '';
+            if (!events || events.length === 0) { calendarList.innerHTML = '<div class="loading-text">일정이 없습니다.</div>'; return; }
+            events.forEach(event => {
+                const li = document.createElement('li');
+                li.className = 'calendar-item';
+                li.innerHTML = `<div class="todo-time">${event.time}</div><div class="todo-text">${event.text}</div>`;
+                calendarList.appendChild(li);
+            });
+        }
 
-        // 버튼 및 키보드 이벤트 연결입니다.
-        todoAddBtn.addEventListener('click', addTodo);
-        todoInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addTodo(); });
+        async function initWeather() {
+            const secretKey = localStorage.getItem('v2_gas_secret');
+            if (!secretKey) { document.getElementById('w-temp').innerText = "🔑"; return; }
 
-        // 페이지 로드 시 데이터를 불러옵니다.
-        loadTodos();
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const grid = dfs_xy_conv(pos.coords.latitude, pos.coords.longitude);
+                try {
+                    const response = await fetch(`${GAS_APP_URL}?key=${secretKey}&type=weather&nx=${grid.x}&ny=${grid.y}`, { method: 'GET', mode: 'cors', redirect: 'follow' });
+                    const data = await response.json();
+                    if (data.T1H) {
+                        document.getElementById('w-temp').innerText = data.T1H + "°";
+                        const icons = ["☀️", "🌧️", "🌨️", "❄️", "🌦️"]; // 강수 형태에 따른 매칭
+                        document.getElementById('w-icon').innerText = icons[parseInt(data.PTY)] || "🌤️";
+                    }
+                } catch (e) { document.getElementById('w-temp').innerText = "ERR"; }
+            }, () => { document.getElementById('w-temp').innerText = "LOC?"; });
+        }
 
+        renderTodos();
+        initWeather(); // 페이지 로드 시 날씨 실행
     </script>
 </body>
 </html>
