@@ -65,13 +65,17 @@
         .action-btn:hover { background: rgba(168, 85, 247, 0.1); transform: translateY(-2px); border-color: var(--color-c); }
         .action-btn-icon { font-size: 1.2rem; margin-right: 12px; }
         
-        /* 트렌드 아이템 전용 디자인 */
-        .trend-item { display: flex; align-items: center; background: rgba(255,255,255,0.03); padding: 12px 14px; border-radius: 10px; margin-bottom: 8px; transition: background 0.2s ease; }
-        .trend-item:hover { background: rgba(255,255,255,0.08); }
-        .trend-rank { font-weight: 800; color: var(--color-c); width: 28px; font-size: 1.1rem; }
-        .trend-title { flex: 1; color: var(--text-main); text-decoration: none; font-size: 0.95rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-        .trend-title:hover { color: var(--color-c); }
-        .trend-traffic { font-size: 0.75rem; background: rgba(248, 113, 113, 0.15); color: #f87171; padding: 4px 8px; border-radius: 12px; margin-left: 10px; white-space: nowrap; }
+        /* [신규] 뉴스 탭(Tab) 전용 디자인 */
+        .news-tabs-container { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; } /* 가로 스크롤 가능하게 만듦 */
+        .news-tabs-container::-webkit-scrollbar { display: none; } /* 모바일처럼 스크롤바 안 보이게 숨김 */
+        .news-tab-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 20px; padding: 6px 14px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.2s; outline: none; }
+        .news-tab-btn:hover { background: rgba(255,255,255,0.1); }
+        .news-tab-btn.active { background: rgba(168, 85, 247, 0.2); border-color: var(--color-c); color: var(--text-main); font-weight: bold; } /* 선택된 탭은 보라색으로 강조 */
+        
+        .data-item { background: rgba(255,255,255,0.03); padding: 12px 14px; border-radius: 10px; margin-bottom: 8px; transition: background 0.2s ease; }
+        .data-item:hover { background: rgba(255,255,255,0.08); }
+        .data-item a { color: var(--text-main); text-decoration: none; font-size: 0.9rem; display: block; line-height: 1.4; word-break: keep-all; }
+        .data-item a:hover { color: var(--color-c); text-decoration: underline; }
 
         .finance-box { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 16px; text-align: center; flex: 1; border: 1px solid rgba(255,255,255,0.05); }
         .finance-val { font-size: 1.6rem; font-weight: 800; margin-top: 8px; }
@@ -116,14 +120,14 @@
             <div class="bento-desc">일상과 사진이 담길 공간입니다.</div> <!-- 오빠가 승인한 V1 버전의 오리지널 설명 문구입니다. -->
         </div>
 
-        <!-- [C구역] 인사이트 & 자산 (업데이트됨) -->
+        <!-- [C구역] 인사이트 & 자산 (뉴스 복구됨) -->
         <div class="bento-item" id="zone-c">
             <div class="bento-title"><div class="zone-indicator"></div>인사이트 & 자산</div>
             <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
                 
-                <!-- 기존 '뉴스' 대신 '구글 트렌드' 버튼으로 교체했습니다. -->
-                <button class="action-btn" id="btn-trends">
-                    <div style="display:flex; align-items:center;"><span class="action-btn-icon">🔥</span>실시간 구글 트렌드</div>
+                <!-- 트렌드를 버리고 안정적인 맞춤형 뉴스 버튼으로 교체 -->
+                <button class="action-btn" id="btn-news">
+                    <div style="display:flex; align-items:center;"><span class="action-btn-icon">📰</span>맞춤형 핵심 뉴스</div>
                     <span style="color:var(--text-muted)">›</span>
                 </button>
                 
@@ -175,16 +179,16 @@
 
     <!-- ==================== [C구역 추가 모달 영역] ==================== -->
 
-    <!-- [C구역 모달 1] 구글 트렌드 전용 팝업 (뉴스 대체) -->
-    <div class="modal-overlay" id="modal-trends">
+    <!-- [C구역 모달 1] 맞춤형 뉴스 탭 모달 -->
+    <div class="modal-overlay" id="modal-news">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="bento-title" style="margin-bottom:0; font-size: 1rem;"><div class="zone-indicator" style="background-color: var(--color-c);"></div>실시간 구글 트렌드</div>
-                <button class="modal-close-btn" id="close-modal-trends">✕</button>
+                <div class="bento-title" style="margin-bottom:0; font-size: 1rem;"><div class="zone-indicator" style="background-color: var(--color-c);"></div>맞춤형 핵심 뉴스</div>
+                <button class="modal-close-btn" id="close-modal-news">✕</button>
             </div>
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:15px; text-align:center;">대한민국 일별 인기 검색어 TOP 10</div>
-            <div class="modal-body" id="trends-content" style="max-height: 60vh; overflow-y: auto;">
-                <div class="loading-text">🔥 트렌드 분석 중...</div>
+            <!-- 뉴스가 렌더링될 메인 캔버스 -->
+            <div class="modal-body" id="news-content" style="max-height: 60vh; overflow-y: auto;">
+                <div class="loading-text">구글 뉴스(RSS)를 가져오는 중...</div>
             </div>
         </div>
     </div>
@@ -372,71 +376,88 @@
             });
         }
 
-        // ==================== [C구역] 트렌드, 증시, 부동산 로직 ====================
+        // ==================== [C구역] 뉴스, 증시, 부동산 로직 ====================
         
-        const btnTrends = document.getElementById('btn-trends');
+        const btnNews = document.getElementById('btn-news');
         const btnFinance = document.getElementById('btn-finance');
         const btnRealEstate = document.getElementById('btn-realestate');
         
-        const modalTrends = document.getElementById('modal-trends');
+        const modalNews = document.getElementById('modal-news');
         const modalFinance = document.getElementById('modal-finance');
         const modalRealestate = document.getElementById('modal-realestate');
 
         // 모달 닫기 이벤트 연결
-        document.getElementById('close-modal-trends').addEventListener('click', () => modalTrends.classList.remove('active'));
+        document.getElementById('close-modal-news').addEventListener('click', () => modalNews.classList.remove('active'));
         document.getElementById('close-modal-finance').addEventListener('click', () => modalFinance.classList.remove('active'));
         document.getElementById('close-modal-realestate').addEventListener('click', () => modalRealestate.classList.remove('active'));
         
-        [modalTrends, modalFinance, modalRealestate].forEach(modal => {
+        [modalNews, modalFinance, modalRealestate].forEach(modal => {
             modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
         });
 
-        // 캐싱 변수
-        let cachedTrendsData = null;
+        // 데이터 캐싱 변수
+        let cachedNewsData = null;
         let cachedFinanceData = null;
         let cachedRealEstateData = null;
+        
+        // 현재 선택된 뉴스 탭 키워드 (기본값: 인공지능)
+        let currentNewsTab = '인공지능';
+        const newsKeywords = ['인공지능', 'IT', '우주', '로봇', '자율주행', '노후'];
 
-        // [구글 트렌드 모달 열기]
-        btnTrends.addEventListener('click', () => {
-            modalTrends.classList.add('active');
-            if (cachedTrendsData) return renderTrends(cachedTrendsData);
+        // [구글 뉴스 모달 열기]
+        btnNews.addEventListener('click', () => {
+            modalNews.classList.add('active');
+            if (cachedNewsData) return renderNews(cachedNewsData);
             
-            const content = document.getElementById('trends-content');
-            content.innerHTML = '<div class="loading-text">🔥 실시간 트렌드를 분석하고 있습니다...</div>';
+            const content = document.getElementById('news-content');
+            content.innerHTML = '<div class="loading-text">구글 뉴스를 가져오는 중...</div>';
             
-            fetch(`${GAS_APP_URL}?type=trends`)
+            fetch(`${GAS_APP_URL}?type=news`)
                 .then(res => res.json())
                 .then(data => { 
                     if(data.error) throw new Error(data.error);
-                    
-                    // [버그 픽스] 정상적인 데이터가 1개라도 있을 때만 캐싱
-                    if(data.trends && data.trends.length > 0) {
-                        cachedTrendsData = data; 
-                    }
-                    renderTrends(data); 
+                    cachedNewsData = data; 
+                    renderNews(data); 
                 })
                 .catch(err => { 
-                    content.innerHTML = `<div class="loading-text" style="color:#f43f5e;">${err.message || '데이터를 불러오지 못했습니다.'}</div>`; 
+                    content.innerHTML = `<div class="loading-text" style="color:#f43f5e;">뉴스를 불러오지 못했습니다.</div>`; 
                 });
         });
 
-        function renderTrends(data) {
-            const content = document.getElementById('trends-content');
-            // [버그 픽스] 빈 배열이 올 경우 백지가 되는 현상 방지
-            if (!data || !data.trends || data.trends.length === 0) {
-                content.innerHTML = '<div class="loading-text" style="color:#f43f5e;">현재 트렌드 데이터가 없습니다. (일시적 오류)</div>';
-                return;
-            }
+        // 탭 버튼 클릭 시 호출되는 함수 (전역 등록)
+        window.switchNewsTab = (kw) => {
+            currentNewsTab = kw;
+            if (cachedNewsData) renderNews(cachedNewsData);
+        };
 
-            let html = '';
-            data.trends.forEach((item, index) => {
-                html += `
-                <div class="trend-item">
-                    <div class="trend-rank">${index + 1}</div>
-                    <a href="${item.link}" target="_blank" class="trend-title" title="${item.title}">${item.title}</a>
-                    <div class="trend-traffic">🔥 ${item.traffic}</div>
-                </div>`;
+        // 뉴스 화면 렌더링 함수
+        function renderNews(data) {
+            const content = document.getElementById('news-content');
+            if (!data || !data.news) return;
+
+            // 1. 상단 탭(Tab) 메뉴 그리기
+            let html = `<div class="news-tabs-container">`;
+            newsKeywords.forEach(kw => {
+                const activeCls = (kw === currentNewsTab) ? 'active' : '';
+                html += `<button class="news-tab-btn ${activeCls}" onclick="switchNewsTab('${kw}')">${kw}</button>`;
             });
+            html += `</div>`;
+
+            // 2. 선택된 탭의 기사 리스트 그리기
+            html += `<div>`;
+            const articles = data.news[currentNewsTab] || [];
+            if (articles.length === 0) {
+                html += `<div class="loading-text" style="padding-top:20px;">관련 기사가 없습니다.</div>`;
+            } else {
+                articles.forEach(art => {
+                    html += `
+                    <div class="data-item">
+                        <a href="${art.link}" target="_blank" title="${art.title}">${art.title}</a>
+                    </div>`;
+                });
+            }
+            html += `</div>`;
+            
             content.innerHTML = html;
         }
 
