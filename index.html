@@ -1,538 +1,83 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나만의 포털 V2</title>
+function doGet(e) {
+  const MY_SECRET_KEY = PropertiesService.getScriptProperties().getProperty('MY_KEY');
+  const WEATHER_API_KEY = PropertiesService.getScriptProperties().getProperty('WEATHER_KEY');
+  
+  if (!MY_SECRET_KEY) {
+    return createJsonResponse({error: "Server secret key is not set."});
+  }
+
+  if (!e || !e.parameter) {
+    return createJsonResponse({error: "Invalid request format."});
+  }
+
+  if (e.parameter.key !== MY_SECRET_KEY) {
+    return createJsonResponse({error: "Invalid secret key."});
+  }
+
+  if (e.parameter.type === 'weather') {
+    return fetchKmaWeather(e.parameter.nx, e.parameter.ny, WEATHER_API_KEY);
+  }
+
+  return fetchCalendarEvents();
+}
+
+function testWeatherKey() {
+  const apiKey = PropertiesService.getScriptProperties().getProperty('WEATHER_KEY');
+  const nx = "60";
+  const ny = "127";
+  
+  console.log("--- KMA API Test Start ---");
+  console.log("API Key: " + apiKey);
+  
+  const result = fetchKmaWeather(nx, ny, apiKey);
+  console.log("Result: " + result.getContent());
+  console.log("--- KMA API Test End ---");
+}
+
+function fetchKmaWeather(nx, ny, apiKey) {
+  const now = new Date();
+  const targetTime = new Date(now.getTime() - 40 * 60 * 1000);
+  
+  const dateStr = Utilities.formatDate(targetTime, "GMT+9", "yyyyMMdd");
+  const timeStr = Utilities.formatDate(targetTime, "GMT+9", "HH00");
+
+  const url = `http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=${apiKey}&pageNo=1&numOfRows=10&dataType=JSON&base_date=${dateStr}&base_time=${timeStr}&nx=${nx}&ny=${ny}`;
+  
+  try {
+    const response = UrlFetchApp.fetch(url, {muteHttpExceptions: true});
+    const content = response.getContentText();
+    const data = JSON.parse(content);
     
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    if (data.response && data.response.body && data.response.body.items) {
+      const items = data.response.body.items.item;
+      const weatherData = {
+        T1H: items.find(i => i.category === 'T1H').obsrValue,
+        PTY: items.find(i => i.category === 'PTY').obsrValue
+      };
+      return createJsonResponse(weatherData);
+    } else {
+      const errorMsg = data.response && data.response.header ? data.response.header.resultMsg : "Unknown response format";
+      return createJsonResponse({error: "KMA API Error: " + errorMsg});
+    }
+  } catch(err) {
+    return createJsonResponse({error: "KMA Fetch Failed: " + err.toString()});
+  }
+}
 
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            
-            --color-a: #22c55e;
-            --color-b: #f59e0b;
-            --color-c: #a855f7;
-            --color-d: #6366f1;
-        }
+function fetchCalendarEvents() {
+  const now = new Date();
+  const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const events = CalendarApp.getDefaultCalendar().getEvents(now, nextWeek);
+  
+  const result = events.map(event => ({
+    text: event.getTitle(),
+    time: Utilities.formatDate(event.getStartTime(), "GMT+9", "MM/dd HH:mm")
+  }));
+  
+  return createJsonResponse(result);
+}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Pretendard', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            overflow-x: hidden;
-        }
-
-        .bento-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-            width: 100%;
-            max-width: 1000px;
-        }
-
-        @media (min-width: 768px) {
-            .bento-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .bento-item {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 24px;
-            height: 300px;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .bento-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .bento-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .zone-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-
-        #zone-a .zone-indicator { background-color: var(--color-a); box-shadow: 0 0 10px var(--color-a); }
-        #zone-b .zone-indicator { background-color: var(--color-b); }
-        #zone-c .zone-indicator { background-color: var(--color-c); }
-        #zone-d .zone-indicator { background-color: var(--color-d); }
-
-        .bento-desc {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .a-zone-body {
-            flex: 1;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .weather-section {
-            flex: 1;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .weather-val {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--color-a);
-        }
-        
-        .weather-icon {
-            font-size: 2.2rem;
-            margin-bottom: 5px;
-        }
-        
-        .weather-label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .todo-section { 
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .todo-icon-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            width: 80px;
-            height: 80px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: var(--color-a);
-        }
-
-        .todo-icon-btn:hover {
-            background: rgba(34, 197, 94, 0.1);
-            transform: translateY(-3px);
-            border-color: var(--color-a);
-        }
-
-        .todo-label {
-            margin-top: 10px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(8px);
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background: #1e293b;
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            width: 95%;
-            max-width: 450px;
-            padding: 25px;
-            transform: scale(0.9);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .modal-overlay.active .modal-content {
-            transform: scale(1);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .modal-close-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .secret-key-group {
-            background: rgba(34, 197, 94, 0.05);
-            padding: 10px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(34, 197, 94, 0.1);
-        }
-
-        .todo-input-group {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .todo-input {
-            flex: 1;
-            background: rgba(0,0,0,0.2);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            padding: 12px;
-            color: white;
-            outline: none;
-        }
-
-        .todo-add-btn {
-            background: var(--color-a);
-            border: none;
-            border-radius: 10px;
-            padding: 0 15px;
-            font-weight: 700;
-            cursor: pointer;
-            color: #000;
-        }
-
-        .todo-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 150px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-        }
-
-        .calendar-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .todo-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255,255,255,0.03);
-            padding: 10px;
-            border-radius: 10px;
-        }
-
-        .calendar-item {
-            display: flex;
-            flex-direction: column;
-            background: rgba(34, 197, 94, 0.05);
-            padding: 12px;
-            border-radius: 12px;
-            border-left: 4px solid var(--color-a);
-        }
-
-        .todo-text { font-size: 0.95rem; }
-        .completed .todo-text { text-decoration: line-through; color: var(--text-muted); }
-        .todo-delete-btn { color: #f43f5e; background: none; border: none; cursor: pointer; font-size: 0.8rem; }
-        .todo-time { font-size: 0.75rem; color: var(--color-a); margin-bottom: 4px; font-weight: 600; }
-        .section-title { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .loading-text { text-align: center; color: var(--text-muted); padding: 10px; font-size: 0.8rem; }
-
-    </style>
-</head>
-<body>
-
-    <div class="bento-container">
-        <div class="bento-item" id="zone-a">
-            <div class="bento-title">
-                <div class="zone-indicator"></div>
-                날씨 & To-do
-            </div>
-            
-            <div class="a-zone-body">
-                <div class="weather-section" id="weather-area">
-                    <div id="w-icon" class="weather-icon">⌛</div>
-                    <div id="w-temp" class="weather-val">--</div>
-                    <div class="weather-label">현재 기온</div>
-                </div>
-
-                <div class="todo-section">
-                    <div class="todo-icon-btn" id="open-todo-btn">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 11l3 3L22 4"></path>
-                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                        </svg>
-                    </div>
-                    <div class="todo-label">오늘의 일정</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="bento-item" id="zone-b">
-            <div class="bento-title">
-                <div class="zone-indicator"></div>
-                나의 유니버스
-            </div>
-            <div class="bento-desc">일상과 사진이 담길 공간입니다.</div>
-        </div>
-
-        <div class="bento-item" id="zone-c">
-            <div class="bento-title">
-                <div class="zone-indicator"></div>
-                엑기스 뉴스
-            </div>
-            <div class="bento-desc">관심 있는 RSS 피드가 연동될 예정입니다.</div>
-        </div>
-
-        <div class="bento-item" id="zone-d">
-            <div class="bento-title">
-                <div class="zone-indicator"></div>
-                개발자 패널
-            </div>
-            <div class="bento-desc">서버 상태와 도구들을 배치합니다.</div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="modal-a">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="bento-title" style="margin-bottom:0; font-size: 1rem;">
-                    <div class="zone-indicator" style="background-color: var(--color-a);"></div>
-                    미션 및 일정 관리
-                </div>
-                <button class="modal-close-btn" id="close-modal-a">✕</button>
-            </div>
-            
-            <div class="modal-body">
-                <div class="secret-key-group">
-                    <div style="font-size: 0.75rem; color: var(--color-a); margin-bottom: 5px;">🗝️ 포털 암호 설정 (GAS 연동용)</div>
-                    <div style="display: flex; gap: 5px;">
-                        <input type="password" id="gas-secret-input" class="todo-input" style="padding: 8px;" placeholder="암호를 입력하세요">
-                        <button class="todo-add-btn" id="save-secret-btn" style="padding: 0 10px; font-size: 0.8rem;">저장</button>
-                    </div>
-                </div>
-
-                <div class="todo-input-group">
-                    <input type="text" id="todo-input" class="todo-input" placeholder="새로운 미션을 직접 입력하세요">
-                    <button class="todo-add-btn" id="todo-add-btn">추가</button>
-                </div>
-
-                <ul class="todo-list" id="todo-list"></ul>
-
-                <div class="section-title">Google Calendar 일정 (최근 7일)</div>
-                <ul class="calendar-list" id="calendar-list">
-                    <div class="loading-text">암호를 저장하면 일정을 불러옵니다.</div>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const GAS_APP_URL = 'https://script.google.com/macros/s/AKfycbyeDB8kmaQ3d0hxBs2C3QRLl_B5ATC0lRRAQB_GP8luUwog8joAHBVr6JOYSU0uOWel/exec'; 
-
-        const openTodoBtn = document.getElementById('open-todo-btn');
-        const modalA = document.getElementById('modal-a');
-        const closeModalBtn = document.getElementById('close-modal-a');
-        const todoInput = document.getElementById('todo-input');
-        const todoAddBtn = document.getElementById('todo-add-btn');
-        const todoList = document.getElementById('todo-list');
-        const calendarList = document.getElementById('calendar-list');
-        const secretInput = document.getElementById('gas-secret-input');
-        const saveSecretBtn = document.getElementById('save-secret-btn');
-
-        openTodoBtn.addEventListener('click', () => { 
-            modalA.classList.add('active');
-            todoInput.focus();
-            
-            const savedKey = localStorage.getItem('v2_gas_secret');
-            if (savedKey) {
-                secretInput.value = savedKey;
-                fetchCalendarEvents(); 
-            }
-        });
-
-        closeModalBtn.addEventListener('click', () => { modalA.classList.remove('active'); });
-        modalA.addEventListener('click', (e) => { if (e.target === modalA) modalA.classList.remove('active'); });
-
-        saveSecretBtn.addEventListener('click', () => {
-            const key = secretInput.value.trim();
-            if (key) {
-                localStorage.setItem('v2_gas_secret', key);
-                fetchCalendarEvents();
-                initWeather(); 
-            }
-        });
-
-        let todos = JSON.parse(localStorage.getItem('v2_portal_todos')) || [];
-
-        function save() { localStorage.setItem('v2_portal_todos', JSON.stringify(todos)); }
-
-        function renderTodos() {
-            todoList.innerHTML = '';
-            todos.forEach((todo, idx) => {
-                const li = document.createElement('li');
-                li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
-                li.innerHTML = `
-                    <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="toggle(${idx})">
-                        <input type="checkbox" ${todo.completed ? 'checked' : ''} style="cursor:pointer;">
-                        <span class="todo-text">${todo.text}</span>
-                    </div>
-                    <button class="todo-delete-btn" onclick="del(${idx})">삭제</button>
-                `;
-                todoList.appendChild(li);
-            });
-        }
-
-        function add() {
-            const val = todoInput.value.trim();
-            if (val) {
-                todos.unshift({ text: val, completed: false });
-                todoInput.value = '';
-                save(); renderTodos();
-            }
-        }
-
-        window.toggle = (idx) => { todos[idx].completed = !todos[idx].completed; save(); renderTodos(); };
-        window.del = (idx) => { todos.splice(idx, 1); save(); renderTodos(); };
-
-        todoAddBtn.addEventListener('click', add);
-        todoInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') add(); });
-
-        function dfs_xy_conv(v1, v2) {
-            const RE = 6371.00877; const GRID = 5.0; const SLAT1 = 30.0; const SLAT2 = 60.0;
-            const OLON = 126.0; const OLAT = 38.0; const XO = 43; const YO = 136;
-            const DEGRAD = Math.PI / 180.0; const re = RE / GRID; const slat1 = SLAT1 * DEGRAD;
-            const slat2 = SLAT2 * DEGRAD; const olon = OLON * DEGRAD; const olat = OLAT * DEGRAD;
-            let sn = Math.tan(Math.PI * 0.25 + slat2 * 0.5) / Math.tan(Math.PI * 0.25 + slat1 * 0.5);
-            sn = Math.log(Math.cos(slat1) / Math.cos(slat2)) / Math.log(sn);
-            let sf = Math.tan(Math.PI * 0.25 + slat1 * 0.5);
-            sf = Math.pow(sf, sn) * Math.cos(slat1) / sn;
-            let ro = Math.tan(Math.PI * 0.25 + olat * 0.5);
-            ro = re * sf / Math.pow(ro, sn);
-            let ra = Math.tan(Math.PI * 0.25 + (v1) * DEGRAD * 0.5);
-            ra = re * sf / Math.pow(ra, sn);
-            let theta = v2 * DEGRAD - olon;
-            if (theta > Math.PI) theta -= 2.0 * Math.PI;
-            if (theta < -Math.PI) theta += 2.0 * Math.PI;
-            theta *= sn;
-            return { x: Math.floor(ra * Math.sin(theta) + XO + 0.5), y: Math.floor(ro - ra * Math.cos(theta) + YO + 0.5) };
-        }
-
-        async function fetchCalendarEvents() {
-            const secretKey = localStorage.getItem('v2_gas_secret');
-            if (!secretKey) return;
-            
-            try {
-                const response = await fetch(`${GAS_APP_URL}?key=${secretKey}`, { method: 'GET', mode: 'cors', redirect: 'follow' });
-                const data = await response.json();
-                
-                if (data.error) { calendarList.innerHTML = `<div class="loading-text" style="color:#f43f5e;">${data.error}</div>`; return; }
-                
-                renderCalendar(data);
-            } catch (error) { 
-                calendarList.innerHTML = '<div class="loading-text">일정 로드 실패. (CORS 에러 혹은 배포 설정 문제)</div>'; 
-            }
-        }
-
-        function renderCalendar(events) {
-            calendarList.innerHTML = '';
-            if (!events || events.length === 0) { calendarList.innerHTML = '<div class="loading-text">향후 7일간 일정이 없습니다. 편안한 하루 보내세요!</div>'; return; }
-            events.forEach(event => {
-                const li = document.createElement('li');
-                li.className = 'calendar-item';
-                li.innerHTML = `<div class="todo-time">${event.time}</div><div class="todo-text">${event.text}</div>`;
-                calendarList.appendChild(li);
-            });
-        }
-
-        async function initWeather() {
-            const secretKey = localStorage.getItem('v2_gas_secret');
-            if (!secretKey) { document.getElementById('w-temp').innerText = "🔑"; return; }
-
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                const grid = dfs_xy_conv(pos.coords.latitude, pos.coords.longitude);
-                try {
-                    const response = await fetch(`${GAS_APP_URL}?key=${secretKey}&type=weather&nx=${grid.x}&ny=${grid.y}`, { method: 'GET', mode: 'cors', redirect: 'follow' });
-                    const data = await response.json();
-                    
-                    if (data.T1H) {
-                        document.getElementById('w-temp').innerText = data.T1H + "°";
-                        const icons = ["☀️", "🌧️", "🌨️", "❄️", "🌦️"]; 
-                        document.getElementById('w-icon').innerText = icons[parseInt(data.PTY)] || "🌤️";
-                    } else if (data.error) {
-                        document.getElementById('w-temp').innerText = "ERR";
-                        console.error(data.error);
-                    }
-                } catch (e) { 
-                    document.getElementById('w-temp').innerText = "ERR"; 
-                }
-            }, () => { 
-                document.getElementById('w-temp').innerText = "LOC?"; 
-            });
-        }
-
-        renderTodos();
-        initWeather();
-
-    </script>
-</body>
-</html>
+function createJsonResponse(data) {
+  return ContentService.createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
