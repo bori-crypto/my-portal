@@ -194,7 +194,7 @@
             max-width: 450px;
             padding: 25px;
             transform: scale(0.9);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.3s ease;
         }
 
         .modal-overlay.active .modal-content {
@@ -293,11 +293,9 @@
         .todo-time { font-size: 0.75rem; color: var(--color-a); margin-bottom: 4px; font-weight: 600; }
         .section-title { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
         .loading-text { text-align: center; color: var(--text-muted); padding: 10px; font-size: 0.8rem; }
-
     </style>
 </head>
 <body>
-
     <div class="bento-container">
         <!-- [A구역] 날씨 & To-do -->
         <div class="bento-item" id="zone-a">
@@ -305,14 +303,12 @@
                 <div class="zone-indicator"></div>
                 날씨 & To-do
             </div>
-            
             <div class="a-zone-body">
                 <div class="weather-section" id="weather-area">
                     <div id="w-icon" class="weather-icon">⌛</div>
                     <div id="w-temp" class="weather-val">--</div>
                     <div class="weather-label">현재 기온</div>
                 </div>
-
                 <div class="todo-section">
                     <div class="todo-icon-btn" id="open-todo-btn">
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -327,45 +323,31 @@
 
         <!-- [B구역] 나의 유니버스 - V1 복구 -->
         <div class="bento-item" id="zone-b">
-            <div class="bento-title">
-                <div class="zone-indicator"></div>
-                나의 유니버스
-            </div>
+            <div class="bento-title"><div class="zone-indicator"></div>나의 유니버스</div>
             <div class="bento-desc">일상과 사진이 담길 공간입니다.</div>
         </div>
 
         <!-- [C구역] 엑기스 뉴스 - V1 복구 -->
         <div class="bento-item" id="zone-c">
-            <div class="bento-title">
-                <div class="zone-indicator"></div>
-                엑기스 뉴스
-            </div>
+            <div class="bento-title"><div class="zone-indicator"></div>엑기스 뉴스</div>
             <div class="bento-desc">관심 있는 RSS 피드가 연동될 예정입니다.</div>
         </div>
 
         <!-- [D구역] 개발자 패널 - V1 복구 -->
         <div class="bento-item" id="zone-d">
-            <div class="bento-title">
-                <div class="zone-indicator"></div>
-                개발자 패널
-            </div>
+            <div class="bento-title"><div class="zone-indicator"></div>개발자 패널</div>
             <div class="bento-desc">서버 상태와 도구들을 배치합니다.</div>
         </div>
     </div>
 
-    <!-- 모달 상세 창 -->
+    <!-- 모달 창 -->
     <div class="modal-overlay" id="modal-a">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="bento-title" style="margin-bottom:0; font-size: 1rem;">
-                    <div class="zone-indicator" style="background-color: var(--color-a);"></div>
-                    미션 및 일정 관리
-                </div>
+                <div class="bento-title" style="margin-bottom:0; font-size: 1rem;"><div class="zone-indicator" style="background-color: var(--color-a);"></div>미션 및 일정 관리</div>
                 <button class="modal-close-btn" id="close-modal-a">✕</button>
             </div>
-            
             <div class="modal-body">
-                <!-- 보안 암호 설정 (캘린더 연동용) -->
                 <div class="secret-key-group">
                     <div style="font-size: 0.75rem; color: var(--color-a); margin-bottom: 5px;">🗝️ 포털 암호 설정 (GAS 연동용)</div>
                     <div style="display: flex; gap: 5px;">
@@ -373,17 +355,11 @@
                         <button class="todo-add-btn" id="save-secret-btn" style="padding: 0 10px; font-size: 0.8rem;">저장</button>
                     </div>
                 </div>
-
-                <!-- 수동 할 일 입력 (오빠가 찾던 입력창!) -->
                 <div class="todo-input-group">
                     <input type="text" id="todo-input" class="todo-input" placeholder="새로운 미션을 직접 입력하세요">
                     <button class="todo-add-btn" id="todo-add-btn">추가</button>
                 </div>
-
-                <!-- 수동 리스트 -->
                 <ul class="todo-list" id="todo-list"></ul>
-
-                <!-- 구글 캘린더 리스트 -->
                 <div class="section-title">Google Calendar 일정 (최근 7일)</div>
                 <ul class="calendar-list" id="calendar-list">
                     <div class="loading-text">암호를 저장하면 일정을 불러옵니다.</div>
@@ -393,7 +369,7 @@
     </div>
 
     <script>
-        const GAS_APP_URL = 'https://script.google.com/macros/s/AKfycby0jEFGQp0ijecFEhVv5sYKNBrYkahilhN9nEJj4svr56z5bdhPCCVAynQx2As0e/exec'; 
+        const GAS_APP_URL = 'https://script.google.com/macros/s/AKfycby0jEFGQp0ijecFEhVv5sYKNBrYkahilhN9nEJj4svr56z5bdhPCCVAynQx2As0e/exec';
 
         const openTodoBtn = document.getElementById('open-todo-btn');
         const modalA = document.getElementById('modal-a');
@@ -405,23 +381,19 @@
         const secretInput = document.getElementById('gas-secret-input');
         const saveSecretBtn = document.getElementById('save-secret-btn');
 
-        // 모달 열기 로직
-        openTodoBtn.addEventListener('click', () => { 
+        openTodoBtn.addEventListener('click', () => {
             modalA.classList.add('active');
             todoInput.focus();
-            
             const savedKey = localStorage.getItem('v2_gas_secret');
             if (savedKey) {
                 secretInput.value = savedKey;
-                fetchCalendarEvents(); 
+                fetchCalendarEvents();
             }
         });
 
-        // 모달 닫기 로직
         closeModalBtn.addEventListener('click', () => { modalA.classList.remove('active'); });
         modalA.addEventListener('click', (e) => { if (e.target === modalA) modalA.classList.remove('active'); });
 
-        // 암호 저장
         saveSecretBtn.addEventListener('click', () => {
             const key = secretInput.value.trim();
             if (key) {
@@ -430,55 +402,26 @@
             }
         });
 
-        // 수동 할 일 로직
         let todos = JSON.parse(localStorage.getItem('v2_portal_todos')) || [];
-
-        function save() { 
-            localStorage.setItem('v2_portal_todos', JSON.stringify(todos)); 
-        }
-
+        function save() { localStorage.setItem('v2_portal_todos', JSON.stringify(todos)); }
         function renderTodos() {
             todoList.innerHTML = '';
             todos.forEach((todo, idx) => {
                 const li = document.createElement('li');
                 li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
-                li.innerHTML = `
-                    <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="toggle(${idx})">
-                        <input type="checkbox" ${todo.completed ? 'checked' : ''} style="cursor:pointer;">
-                        <span class="todo-text">${todo.text}</span>
-                    </div>
-                    <button class="todo-delete-btn" onclick="del(${idx})">삭제</button>
-                `;
+                li.innerHTML = `<div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="toggle(${idx})"><input type="checkbox" ${todo.completed ? 'checked' : ''} style="cursor:pointer;"><span class="todo-text">${todo.text}</span></div><button class="todo-delete-btn" onclick="del(${idx})">삭제</button>`;
                 todoList.appendChild(li);
             });
         }
-
         function add() {
             const val = todoInput.value.trim();
-            if (val) {
-                todos.unshift({ text: val, completed: false });
-                todoInput.value = '';
-                save(); 
-                renderTodos();
-            }
+            if (val) { todos.unshift({ text: val, completed: false }); todoInput.value = ''; save(); renderTodos(); }
         }
-
-        window.toggle = (idx) => { 
-            todos[idx].completed = !todos[idx].completed; 
-            save(); 
-            renderTodos(); 
-        };
-
-        window.del = (idx) => { 
-            todos.splice(idx, 1); 
-            save(); 
-            renderTodos(); 
-        };
-
+        window.toggle = (idx) => { todos[idx].completed = !todos[idx].completed; save(); renderTodos(); };
+        window.del = (idx) => { todos.splice(idx, 1); save(); renderTodos(); };
         todoAddBtn.addEventListener('click', add);
         todoInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') add(); });
 
-        // 기상청 좌표 변환
         function dfs_xy_conv(v1, v2) {
             const RE = 6371.00877; const GRID = 5.0; const SLAT1 = 30.0; const SLAT2 = 60.0;
             const OLON = 126.0; const OLAT = 38.0; const XO = 43; const YO = 136;
@@ -499,32 +442,21 @@
             return { x: Math.floor(ra * Math.sin(theta) + XO + 0.5), y: Math.floor(ro - ra * Math.cos(theta) + YO + 0.5) };
         }
 
-        // 캘린더 연동 (암호 필요)
         async function fetchCalendarEvents() {
             const secretKey = localStorage.getItem('v2_gas_secret');
             if (!secretKey) return;
-            
+            calendarList.innerHTML = '<div class="loading-text">로딩 중...</div>';
             try {
-                const response = await fetch(`${GAS_APP_URL}?key=${secretKey}`, { method: 'GET', mode: 'cors', redirect: 'follow' });
+                const response = await fetch(`${GAS_APP_URL}?key=${secretKey}`, { method: 'GET' });
                 const data = await response.json();
-                
-                if (data.error) { 
-                    calendarList.innerHTML = `<div class="loading-text" style="color:#f43f5e;">${data.error}</div>`; 
-                    return; 
-                }
-                
+                if (data.error) { calendarList.innerHTML = `<div class="loading-text" style="color:#f43f5e;">${data.error}</div>`; return; }
                 renderCalendar(data);
-            } catch (error) { 
-                calendarList.innerHTML = '<div class="loading-text">일정 로드 실패</div>'; 
-            }
+            } catch (error) { calendarList.innerHTML = '<div class="loading-text">일정 로드 실패</div>'; }
         }
 
         function renderCalendar(events) {
             calendarList.innerHTML = '';
-            if (!events || events.length === 0) { 
-                calendarList.innerHTML = '<div class="loading-text">일정이 없습니다.</div>'; 
-                return; 
-            }
+            if (!events || events.length === 0) { calendarList.innerHTML = '<div class="loading-text">일정이 없습니다.</div>'; return; }
             events.forEach(event => {
                 const li = document.createElement('li');
                 li.className = 'calendar-item';
@@ -533,33 +465,28 @@
             });
         }
 
-        // 날씨 로드 (암호 없이 즉시 로드)
         async function initWeather() {
             document.getElementById('w-temp').innerText = "⌛";
             navigator.geolocation.getCurrentPosition(async (pos) => {
                 const grid = dfs_xy_conv(pos.coords.latitude, pos.coords.longitude);
                 try {
-                    // 암호(key) 파라미터 없이 type=weather만 보냄
-                    const response = await fetch(`${GAS_APP_URL}?type=weather&nx=${grid.x}&ny=${grid.y}`, { method: 'GET', mode: 'cors', redirect: 'follow' });
+                    const response = await fetch(`${GAS_APP_URL}?type=weather&nx=${grid.x}&ny=${grid.y}`, { method: 'GET' });
                     const data = await response.json();
-                    
                     if (data.T1H) {
                         document.getElementById('w-temp').innerText = data.T1H + "°";
-                        const icons = ["☀️", "🌧️", "🌨️", "❄️", "🌦️"]; 
+                        const icons = ["☀️", "🌧️", "🌨️", "❄️", "🌦️"];
                         document.getElementById('w-icon').innerText = icons[parseInt(data.PTY)] || "🌤️";
+                    } else {
+                        document.getElementById('w-temp').innerText = "ERR";
                     }
-                } catch (e) { 
-                    document.getElementById('w-temp').innerText = "ERR"; 
+                } catch (e) {
+                    document.getElementById('w-temp').innerText = "ERR";
                 }
-            }, () => { 
-                document.getElementById('w-temp').innerText = "LOC?"; 
-            });
+            }, () => { document.getElementById('w-temp').innerText = "LOC?"; });
         }
 
-        // 초기 실행
         renderTodos();
         initWeather();
-
     </script>
 </body>
 </html>
