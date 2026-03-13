@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>나만의 포털 V2</title>
-    
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-
     <style>
         :root {
             --bg-color: #0f172a;
@@ -14,7 +12,6 @@
             --glass-border: rgba(255, 255, 255, 0.1);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            
             --color-a: #22c55e;
             --color-b: #f59e0b;
             --color-c: #a855f7;
@@ -302,6 +299,7 @@
 <body>
 
     <div class="bento-container">
+        <!-- [A구역] 날씨 & To-do -->
         <div class="bento-item" id="zone-a">
             <div class="bento-title">
                 <div class="zone-indicator"></div>
@@ -327,6 +325,7 @@
             </div>
         </div>
 
+        <!-- [B구역] 나의 유니버스 - V1 복구 -->
         <div class="bento-item" id="zone-b">
             <div class="bento-title">
                 <div class="zone-indicator"></div>
@@ -335,6 +334,7 @@
             <div class="bento-desc">일상과 사진이 담길 공간입니다.</div>
         </div>
 
+        <!-- [C구역] 엑기스 뉴스 - V1 복구 -->
         <div class="bento-item" id="zone-c">
             <div class="bento-title">
                 <div class="zone-indicator"></div>
@@ -343,6 +343,7 @@
             <div class="bento-desc">관심 있는 RSS 피드가 연동될 예정입니다.</div>
         </div>
 
+        <!-- [D구역] 개발자 패널 - V1 복구 -->
         <div class="bento-item" id="zone-d">
             <div class="bento-title">
                 <div class="zone-indicator"></div>
@@ -352,6 +353,7 @@
         </div>
     </div>
 
+    <!-- 모달 상세 창 -->
     <div class="modal-overlay" id="modal-a">
         <div class="modal-content">
             <div class="modal-header">
@@ -363,6 +365,7 @@
             </div>
             
             <div class="modal-body">
+                <!-- 보안 암호 설정 (캘린더 연동용) -->
                 <div class="secret-key-group">
                     <div style="font-size: 0.75rem; color: var(--color-a); margin-bottom: 5px;">🗝️ 포털 암호 설정 (GAS 연동용)</div>
                     <div style="display: flex; gap: 5px;">
@@ -371,13 +374,16 @@
                     </div>
                 </div>
 
+                <!-- 수동 할 일 입력 (오빠가 찾던 입력창!) -->
                 <div class="todo-input-group">
                     <input type="text" id="todo-input" class="todo-input" placeholder="새로운 미션을 직접 입력하세요">
                     <button class="todo-add-btn" id="todo-add-btn">추가</button>
                 </div>
 
+                <!-- 수동 리스트 -->
                 <ul class="todo-list" id="todo-list"></ul>
 
+                <!-- 구글 캘린더 리스트 -->
                 <div class="section-title">Google Calendar 일정 (최근 7일)</div>
                 <ul class="calendar-list" id="calendar-list">
                     <div class="loading-text">암호를 저장하면 일정을 불러옵니다.</div>
@@ -387,7 +393,7 @@
     </div>
 
     <script>
-        const GAS_APP_URL = 'https://script.google.com/macros/s/AKfycby0jEFGQp0ijecFEhVv5sYKNbGWBrYkahilhN9nEJj4svr56z5bdhPCCVAynQx2As0e/exec'; 
+        const GAS_APP_URL = 'https://script.google.com/macros/s/AKfycby0jEFGQp0ijecFEhVv5sYKNBrYkahilhN9nEJj4svr56z5bdhPCCVAynQx2As0e/exec'; 
 
         const openTodoBtn = document.getElementById('open-todo-btn');
         const modalA = document.getElementById('modal-a');
@@ -399,6 +405,7 @@
         const secretInput = document.getElementById('gas-secret-input');
         const saveSecretBtn = document.getElementById('save-secret-btn');
 
+        // 모달 열기 로직
         openTodoBtn.addEventListener('click', () => { 
             modalA.classList.add('active');
             todoInput.focus();
@@ -410,21 +417,25 @@
             }
         });
 
+        // 모달 닫기 로직
         closeModalBtn.addEventListener('click', () => { modalA.classList.remove('active'); });
         modalA.addEventListener('click', (e) => { if (e.target === modalA) modalA.classList.remove('active'); });
 
+        // 암호 저장
         saveSecretBtn.addEventListener('click', () => {
             const key = secretInput.value.trim();
             if (key) {
                 localStorage.setItem('v2_gas_secret', key);
                 fetchCalendarEvents();
-                initWeather(); 
             }
         });
 
+        // 수동 할 일 로직
         let todos = JSON.parse(localStorage.getItem('v2_portal_todos')) || [];
 
-        function save() { localStorage.setItem('v2_portal_todos', JSON.stringify(todos)); }
+        function save() { 
+            localStorage.setItem('v2_portal_todos', JSON.stringify(todos)); 
+        }
 
         function renderTodos() {
             todoList.innerHTML = '';
@@ -447,16 +458,27 @@
             if (val) {
                 todos.unshift({ text: val, completed: false });
                 todoInput.value = '';
-                save(); renderTodos();
+                save(); 
+                renderTodos();
             }
         }
 
-        window.toggle = (idx) => { todos[idx].completed = !todos[idx].completed; save(); renderTodos(); };
-        window.del = (idx) => { todos.splice(idx, 1); save(); renderTodos(); };
+        window.toggle = (idx) => { 
+            todos[idx].completed = !todos[idx].completed; 
+            save(); 
+            renderTodos(); 
+        };
+
+        window.del = (idx) => { 
+            todos.splice(idx, 1); 
+            save(); 
+            renderTodos(); 
+        };
 
         todoAddBtn.addEventListener('click', add);
         todoInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') add(); });
 
+        // 기상청 좌표 변환
         function dfs_xy_conv(v1, v2) {
             const RE = 6371.00877; const GRID = 5.0; const SLAT1 = 30.0; const SLAT2 = 60.0;
             const OLON = 126.0; const OLAT = 38.0; const XO = 43; const YO = 136;
@@ -477,6 +499,7 @@
             return { x: Math.floor(ra * Math.sin(theta) + XO + 0.5), y: Math.floor(ro - ra * Math.cos(theta) + YO + 0.5) };
         }
 
+        // 캘린더 연동 (암호 필요)
         async function fetchCalendarEvents() {
             const secretKey = localStorage.getItem('v2_gas_secret');
             if (!secretKey) return;
@@ -485,17 +508,23 @@
                 const response = await fetch(`${GAS_APP_URL}?key=${secretKey}`, { method: 'GET', mode: 'cors', redirect: 'follow' });
                 const data = await response.json();
                 
-                if (data.error) { calendarList.innerHTML = `<div class="loading-text" style="color:#f43f5e;">${data.error}</div>`; return; }
+                if (data.error) { 
+                    calendarList.innerHTML = `<div class="loading-text" style="color:#f43f5e;">${data.error}</div>`; 
+                    return; 
+                }
                 
                 renderCalendar(data);
             } catch (error) { 
-                calendarList.innerHTML = '<div class="loading-text">일정 로드 실패. (CORS 에러 혹은 배포 설정 문제)</div>'; 
+                calendarList.innerHTML = '<div class="loading-text">일정 로드 실패</div>'; 
             }
         }
 
         function renderCalendar(events) {
             calendarList.innerHTML = '';
-            if (!events || events.length === 0) { calendarList.innerHTML = '<div class="loading-text">향후 7일간 일정이 없습니다. 편안한 하루 보내세요!</div>'; return; }
+            if (!events || events.length === 0) { 
+                calendarList.innerHTML = '<div class="loading-text">일정이 없습니다.</div>'; 
+                return; 
+            }
             events.forEach(event => {
                 const li = document.createElement('li');
                 li.className = 'calendar-item';
@@ -504,23 +533,20 @@
             });
         }
 
+        // 날씨 로드 (암호 없이 즉시 로드)
         async function initWeather() {
-            const secretKey = localStorage.getItem('v2_gas_secret');
-            if (!secretKey) { document.getElementById('w-temp').innerText = "🔑"; return; }
-
+            document.getElementById('w-temp').innerText = "⌛";
             navigator.geolocation.getCurrentPosition(async (pos) => {
                 const grid = dfs_xy_conv(pos.coords.latitude, pos.coords.longitude);
                 try {
-                    const response = await fetch(`${GAS_APP_URL}?key=${secretKey}&type=weather&nx=${grid.x}&ny=${grid.y}`, { method: 'GET', mode: 'cors', redirect: 'follow' });
+                    // 암호(key) 파라미터 없이 type=weather만 보냄
+                    const response = await fetch(`${GAS_APP_URL}?type=weather&nx=${grid.x}&ny=${grid.y}`, { method: 'GET', mode: 'cors', redirect: 'follow' });
                     const data = await response.json();
                     
                     if (data.T1H) {
                         document.getElementById('w-temp').innerText = data.T1H + "°";
                         const icons = ["☀️", "🌧️", "🌨️", "❄️", "🌦️"]; 
                         document.getElementById('w-icon').innerText = icons[parseInt(data.PTY)] || "🌤️";
-                    } else if (data.error) {
-                        document.getElementById('w-temp').innerText = "ERR";
-                        console.error(data.error);
                     }
                 } catch (e) { 
                     document.getElementById('w-temp').innerText = "ERR"; 
@@ -530,6 +556,7 @@
             });
         }
 
+        // 초기 실행
         renderTodos();
         initWeather();
 
