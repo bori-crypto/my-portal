@@ -1,204 +1,322 @@
-<!DOCTYPE html> <!-- HTML5 표준 문서 선언: 브라우저가 화면을 정확하게 그리도록 돕습니다. -->
-<html lang="ko"> <!-- 문서의 주 언어를 한국어로 설정합니다. -->
-<head> <!-- 페이지 설정, 폰트, 스타일 등을 정의하는 머리 부분입니다. -->
-    <meta charset="UTF-8"> <!-- 모든 글자가 깨짐 없이 표시되도록 유니코드 인코딩을 적용합니다. -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 모바일 기기에 맞춰 화면 크기를 조절합니다. -->
-    <title>나만의 포털 V2</title> <!-- 브라우저 상단 탭 제목입니다. -->
+<!DOCTYPE html> <!-- 이 문서가 HTML5 최신 표준 문법으로 작성되었음을 브라우저에게 알려주어 화면 깨짐을 방지합니다. -->
+<html lang="ko"> <!-- 시각 장애인용 스크린 리더기나 검색 엔진이 이 페이지가 한국어 기반임을 알 수 있도록 설정합니다. -->
+<head> <!-- 사용자 눈에는 보이지 않지만, 웹페이지의 전반적인 설정, 폰트, 스타일 등을 정의하는 머리 부분입니다. -->
+    <meta charset="UTF-8"> <!-- 한글, 특수문자, 이모지 등이 전 세계 어디서든 깨짐 없이 정상 출력되도록 UTF-8 인코딩을 적용합니다. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 모바일, 태블릿 등 다양한 기기 화면 너비에 맞춰 크기가 자동 조절되게 하는 반응형 뷰포트 설정입니다. -->
+    <title>나만의 포털 V2</title> <!-- 브라우저 상단 탭에 표시될 우리 프로젝트의 공식 이름입니다. -->
     
-    <!-- 프리텐다드 폰트 로드: 깔끔하고 가독성이 좋은 서체를 적용합니다. -->
+    <!-- 오빠가 기획한 깔끔하고 세련된 디자인을 위해 '프리텐다드' 폰트를 외부 저장소에서 불러옵니다. -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
-    <style> /* CSS 디자인 영역: 단일 파일 원칙에 따라 모든 디자인을 여기에 작성합니다. */
+    <style> /* HTML 문서 안에서 디자인(CSS)을 정의하기 위해 스타일 태그를 엽니다. 유지보수 비용 0원의 '단일 파일 규칙'을 지키기 위함입니다. */
         
-        :root { /* 테마 색상 변수 정의: 유지보수를 편하게 만듭니다. */
-            --bg-color: #0f172a; /* 전체 배경: 깊은 밤의 남색 */
-            --glass-bg: rgba(255, 255, 255, 0.05); /* 글래스모피즘용 반투명 배경 */
-            --glass-border: rgba(255, 255, 255, 0.1); /* 유리 테두리 */
-            --text-main: #f8fafc; /* 주 텍스트 색상 */
-            --text-muted: #94a3b8; /* 보조 텍스트 색상 */
+        :root { /* 문서 전체에서 재사용할 테마 색상들을 변수로 선언하여, 나중에 색상을 바꿀 때 한 곳에서만 수정하면 되도록 효율성을 높입니다. */
+            --bg-color: #0f172a; /* 다크 모드의 깊이감을 주기 위해 배경색을 아주 어두운 슬레이트(남색 계열)로 설정합니다. */
+            --glass-bg: rgba(255, 255, 255, 0.05); /* 글래스모피즘의 핵심인 '반투명한 흰색' 배경입니다. 5%의 불투명도만 줍니다. */
+            --glass-border: rgba(255, 255, 255, 0.1); /* 유리 타일의 테두리를 미세하게 빛나게 보이도록 10% 불투명도의 흰색 선을 씁니다. */
+            --text-main: #f8fafc; /* 어두운 배경에서 글씨가 잘 보이도록 눈이 안 아픈 밝은 회색(거의 흰색)을 주 텍스트 색으로 씁니다. */
+            --text-muted: #94a3b8; /* 부가 설명 등 덜 중요한 텍스트는 시선이 분산되지 않게 조금 더 어두운 회색으로 처리합니다. */
             
-            /* 구역별 테마 컬러: 오빠가 정해준 색상입니다. */
-            --color-a: #22c55e; /* [A구역] 날씨 & To-do: 말차 초록 */
-            --color-b: #f59e0b; /* [B구역] 나의 유니버스: 앰버 황금 */
-            --color-c: #a855f7; /* [C구역] 엑기스 뉴스: 라벤더 보라 */
-            --color-d: #6366f1; /* [D구역] 개발자 패널: 심해 파랑 */
+            /* 오빠가 기획한 4구역의 테마 컬러 변수들입니다. 각 구역의 포인트 색상으로 사용됩니다. */
+            --color-a: #22c55e; /* [A구역] 날씨/할일: 차분 말차색 (생산성을 높여주는 초록색) */
+            --color-b: #f59e0b; /* [B구역] 나의 유니버스: 황금 앰버색 (따뜻한 일상의 기록) */
+            --color-c: #a855f7; /* [C구역] 엑기스 뉴스: 우주 라벤더색 (창의적인 정보 습득) */
+            --color-d: #6366f1; /* [D구역] 개발자 패널: 심해 파랑색 (안정적인 시스템 관리) */
         }
 
-        * { /* 초기화 설정: 브라우저 기본 여백을 지웁니다. */
-            box-sizing: border-box; /* 패딩이 너비에 포함되게 설정 */
-            margin: 0; padding: 0;
-            font-family: 'Pretendard', sans-serif;
+        * { /* 웹페이지의 모든 요소에 공통으로 적용될 기본 규칙을 설정합니다. */
+            box-sizing: border-box; /* 패딩과 테두리 두께가 요소의 전체 너비/높이에 포함되도록 하여 크기 계산의 혼란을 막습니다. */
+            margin: 0; /* 브라우저가 기본으로 제공하는 외부 여백을 없애서 내가 의도한 대로만 배치되게 합니다. */
+            padding: 0; /* 브라우저가 기본으로 제공하는 내부 여백을 없앱니다. */
+            font-family: 'Pretendard', sans-serif; /* 모든 글씨체를 프리텐다드로 통일하고, 만약 로딩 실패 시 기본 고딕(sans-serif)을 씁니다. */
         }
 
-        body { /* 배경색 적용 및 중앙 정렬 레이아웃 */
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+        body { /* 눈에 보이는 화면 전체의 기본 배경과 배치를 설정합니다. */
+            background-color: var(--bg-color); /* 미리 만들어둔 어두운 배경색 변수를 가져와서 다크 모드를 완성합니다. */
+            color: var(--text-main); /* 전체 글씨 색상을 밝은 색으로 설정합니다. */
+            min-height: 100vh; /* 화면의 내용이 적더라도 배경색이 브라우저 창 높이의 100%를 꽉 채우도록 보장합니다. */
+            display: flex; /* 화면 중앙에 벤토 박스를 배치하기 위해 Flexbox 레이아웃 모델을 켭니다. */
+            justify-content: center; /* 가로 기준으로 내용물을 화면의 정중앙에 배치합니다. */
+            align-items: center; /* 세로 기준으로 내용물을 화면의 정중앙에 배치합니다. */
+            padding: 20px; /* 화면이 좁아졌을 때 벤토 박스가 브라우저 가장자리에 딱 붙지 않도록 여유 공간을 줍니다. */
+            overflow-x: hidden; /* 가로 스크롤바가 생겨서 화면이 흔들리는 것을 방지합니다. */
         }
 
-        .bento-container { /* 벤토 박스 그리드 레이아웃 */
-            display: grid;
-            grid-template-columns: 1fr; /* 모바일: 1줄 */
-            gap: 20px;
-            width: 100%;
-            max-width: 1000px;
+        .bento-container { /* 4개의 구역을 담을 큰 바구니(그리드 시스템)를 설정합니다. */
+            display: grid; /* 요소들을 격자(바둑판) 형태로 배치하기 위해 CSS Grid 기술을 사용합니다. */
+            grid-template-columns: 1fr; /* 모바일(기본)에서는 1개의 열(Column)로 위에서 아래로 쌓이게 뼈대를 잡습니다. (모바일 우선주의) */
+            gap: 20px; /* 타일과 타일 사이에 20px의 일정한 숨구멍(간격)을 뚫어줍니다. */
+            width: 100%; /* 부모(body)의 너비를 꽉 채우되, */
+            max-width: 1000px; /* 데스크탑 모니터에서 너무 넓게 퍼지지 않도록 최대 너비를 1000px로 제한합니다. */
         }
 
-        @media (min-width: 768px) { /* PC 버전: 2x2 그리드 구조 */
-            .bento-container { grid-template-columns: repeat(2, 1fr); }
+        @media (min-width: 768px) { /* 브라우저 너비가 768px 이상(태블릿, 데스크탑)일 때만 작동하는 반응형 규칙입니다. */
+            .bento-container { /* 큰 화면이 되었을 때 벤토 컨테이너의 모양을 변경합니다. */
+                grid-template-columns: repeat(2, 1fr); /* 열을 2개로 나누어 오빠가 원했던 '2x2 벤토 박스' 형태로 변신시킵니다. */
+            }
         }
 
-        .bento-item { /* 타일 공통 글래스모피즘 스타일 */
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 24px;
-            height: 300px;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .bento-item { /* 개별 타일(A, B, C, D 구역)에 적용될 공통 글래스모피즘 디자인입니다. */
+            background: var(--glass-bg); /* 반투명한 배경을 적용하여 뒷배경이 살짝 비치게 합니다. */
+            backdrop-filter: blur(16px); /* 글래스모피즘의 핵심! 배경 너머를 16px만큼 흐리게(블러) 처리하여 진짜 유리처럼 만듭니다. */
+            -webkit-backdrop-filter: blur(16px); /* 구형 사파리 브라우저에서도 블러 효과가 잘 먹히도록 호환성을 챙깁니다. */
+            border: 1px solid var(--glass-border); /* 유리의 반사광 느낌을 주기 위해 미세한 반투명 흰색 테두리를 두릅니다. */
+            border-radius: 24px; /* 타일의 모서리를 요즘 트렌드에 맞게 둥글둥글(24px)하게 깎아줍니다. */
+            padding: 24px; /* 타일 안쪽 내용이 벽에 붙지 않도록 24px의 넉넉한 공간을 줍니다. */
+            height: 300px; /* 벤토 박스의 각 타일 높이를 300px로 고정하여 정사각형에 가까운 예쁜 비율을 만듭니다. */
+            display: flex; /* 타일 내부 내용물의 배치를 위해 Flexbox를 씁니다. */
+            flex-direction: column; /* 타일 내부 내용을 위에서 아래로 수직 배치합니다. */
+            position: relative; /* 자식 요소 중 무언가를 타일 안에서 절대 위치로 배치할 때 기준점을 잡습니다. */
+            overflow: hidden; /* 타일 밖으로 내용이나 장식이 튀어나가면 보이지 않게 잘라냅니다. */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* 마우스 호버 시 부드럽게 움직이도록 애니메이션 지속시간을 줍니다. */
         }
 
-        .bento-item:hover { /* 마우스를 올렸을 때 떠오르는 효과 */
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        .bento-item:hover { /* 타일에 마우스를 올렸을 때(호버)의 반응을 정의합니다. */
+            transform: translateY(-5px); /* 타일이 위로 5px 살짝 떠오르는 느낌을 줍니다. */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* 떠오르면서 밑에 그림자가 생겨 3D 같은 입체감을 만듭니다. */
         }
 
-        .bento-title { /* 타일 제목 스타일 */
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .bento-title { /* 타일 내부의 큰 제목 영역 스타일입니다. */
+            font-size: 1.1rem; /* 글씨 크기를 설정합니다. */
+            font-weight: 700; /* 글씨 굵기를 굵게(Bold) 설정하여 눈에 띄게 합니다. */
+            margin-bottom: 20px; /* 제목 아래에 공간을 두어 내용물과 딱 붙지 않게 합니다. */
+            display: flex; /* 아이콘과 텍스트를 가로로 나란히 배치하기 위해 Flexbox를 켭니다. */
+            align-items: center; /* 아이콘과 텍스트의 세로 중앙을 맞춥니다. */
+            gap: 10px; /* 아이콘과 텍스트 사이에 10px의 간격을 띄웁니다. */
         }
 
-        .zone-indicator { /* 구역 표시 작은 점 */
-            width: 8px; height: 8px;
-            border-radius: 50%;
+        .zone-indicator { /* 각 구역의 테마 컬러를 나타내는 동그란 점(인디케이터)입니다. */
+            width: 8px; /* 점의 가로 크기를 8px로 작고 귀엽게 설정합니다. */
+            height: 8px; /* 점의 세로 크기를 8px로 설정합니다. */
+            border-radius: 50%; /* 네모난 박스를 50% 둥글게 깎아 완벽한 원으로 만듭니다. */
         }
 
-        /* 각 구역별 포인트 컬러 인디케이터 */
-        #zone-a .zone-indicator { background-color: var(--color-a); box-shadow: 0 0 10px var(--color-a); }
-        #zone-b .zone-indicator { background-color: var(--color-b); }
-        #zone-c .zone-indicator { background-color: var(--color-c); }
-        #zone-d .zone-indicator { background-color: var(--color-d); }
+        /* 각 구역별 점의 색상을 할당하고 빛나는 효과를 줍니다. */
+        #zone-a .zone-indicator { background-color: var(--color-a); box-shadow: 0 0 10px var(--color-a); } /* A구역 말차색 */
+        #zone-b .zone-indicator { background-color: var(--color-b); } /* B구역 앰버색 */
+        #zone-c .zone-indicator { background-color: var(--color-c); } /* C구역 라벤더색 */
+        #zone-d .zone-indicator { background-color: var(--color-d); } /* D구역 파랑색 */
 
-        .bento-desc { /* V1 복귀 설명 텍스트 스타일 */
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.5;
+        .bento-desc { /* B, C, D 타일 내부의 요약 설명 텍스트 (V1 복구 스타일) 입니다. */
+            color: var(--text-muted); /* 눈이 편안한 어두운 회색으로 바꿉니다. */
+            font-size: 0.95rem; /* 글씨 크기를 살짝 작게 조절합니다. */
+            line-height: 1.5; /* 줄 간격을 넓혀 가독성을 높입니다. */
         }
 
-        /* --- [A구역 전용 레이아웃: 좌측 날씨 / 우측 To-do] --- */
-        .a-zone-body {
-            flex: 1;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
+        /* --- [A구역 전용 CSS: 좌측 날씨 / 우측 일정 버튼] --- */
+        .a-zone-body { /* A구역 내부 콘텐츠를 좌우로 나누는 컨테이너입니다. */
+            flex: 1; /* A구역 제목 아래 남는 공간을 모두 차지합니다. */
+            display: flex; /* 좌우 배치를 위해 Flexbox를 씁니다. */
+            justify-content: space-between; /* 양 끝으로 요소들을 밀어냅니다. */
+            align-items: center; /* 세로 기준 중앙 정렬합니다. */
+            gap: 10px; /* 날씨 칸과 일정 칸 사이의 간격입니다. */
         }
 
-        /* [좌측] 기상청 실제 날씨 영역 */
+        /* [좌측] 기상청 실제 날씨 영역 스타일 */
         .weather-section {
-            flex: 1; height: 100%;
-            display: flex; flex-direction: column;
+            flex: 1; /* 가로 공간의 절반을 씁니다. */
+            height: 100%; /* 부모의 높이를 100% 사용합니다. */
+            display: flex; /* 내부 요소(아이콘, 온도) 정렬을 위한 설정입니다. */
+            flex-direction: column; /* 세로 방향으로 쌓습니다. */
+            justify-content: center; /* 세로 중앙 정렬합니다. */
+            align-items: center; /* 가로 중앙 정렬합니다. */
+            background: rgba(255, 255, 255, 0.02); /* 아주 살짝 밝은 배경을 깔아 구분감을 줍니다. */
+            border-radius: 16px; /* 모서리를 둥글게 깎습니다. */
+            border: 1px solid rgba(255, 255, 255, 0.05); /* 아주 연한 테두리를 줍니다. */
+        }
+
+        .weather-val { /* 기상청에서 받아온 '현재 기온' 수치 스타일입니다. */
+            font-size: 1.8rem; /* 큼직하게 보여줍니다. */
+            font-weight: 800; /* 아주 굵게 강조합니다. */
+            color: var(--color-a); /* 말차색으로 포인트를 줍니다. */
+        }
+        
+        .weather-icon { /* 강수 형태에 따른 날씨 이모지 스타일입니다. */
+            font-size: 2.2rem; /* 아이콘을 아주 크게 설정합니다. */
+            margin-bottom: 5px; /* 기온 수치와의 간격입니다. */
+        }
+        
+        .weather-label { /* 하단에 붙는 "현재 기온" 이라는 작은 설명글입니다. */
+            font-size: 0.8rem; /* 작게 설정합니다. */
+            color: var(--text-muted); /* 눈에 덜 띄는 회색으로 칠합니다. */
+        }
+
+        /* [우측] 일정 확인 버튼 영역 스타일 */
+        .todo-section { 
+            flex: 1; /* 가로 공간의 나머지 절반을 씁니다. */
+            display: flex; /* 정렬을 위한 설정입니다. */
+            flex-direction: column; /* 세로로 쌓습니다. */
+            align-items: center; /* 가로 중앙 정렬합니다. */
+            justify-content: center; /* 세로 중앙 정렬합니다. */
+        }
+
+        .todo-icon-btn { /* 일정을 여는 큼직한 아이콘 버튼입니다. */
+            background: rgba(255, 255, 255, 0.03); /* 은은한 반투명 배경입니다. */
+            border: 1px solid rgba(255, 255, 255, 0.1); /* 미세한 테두리입니다. */
+            border-radius: 20px; /* 둥근 사각형으로 디자인합니다. */
+            width: 80px; height: 80px; /* 버튼의 크기를 80x80 정사각형으로 맞춥니다. */
+            display: flex; /* 내부 SVG 아이콘을 정중앙에 놓기 위한 설정입니다. */
             justify-content: center; align-items: center;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer; /* 클릭 가능하다는 것을 마우스 커서로 알려줍니다. */
+            transition: all 0.3s ease; /* 호버 시 애니메이션 효과를 부드럽게 합니다. */
+            color: var(--color-a); /* 아이콘 색상을 말차색으로 적용합니다. */
         }
 
-        .weather-val { font-size: 1.8rem; font-weight: 800; color: var(--color-a); } /* 기온 수치 */
-        .weather-icon { font-size: 2.2rem; margin-bottom: 5px; } /* 날씨 아이콘 */
-        .weather-label { font-size: 0.8rem; color: var(--text-muted); } /* 설명 문구 */
-
-        /* [우측] To-do 일정 버튼 영역 */
-        .todo-section { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-
-        .todo-icon-btn { /* 일정을 여는 아이콘 버튼 */
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px;
-            width: 80px; height: 80px; display: flex; justify-content: center; align-items: center;
-            cursor: pointer; transition: all 0.3s ease; color: var(--color-a);
+        .todo-icon-btn:hover { /* 아이콘 버튼에 마우스를 올렸을 때의 변화입니다. */
+            background: rgba(34, 197, 94, 0.1); /* 말차색이 은은하게 도는 배경으로 변합니다. */
+            transform: translateY(-3px); /* 위로 살짝 떠오르는 느낌을 줍니다. */
+            border-color: var(--color-a); /* 테두리 선명도를 높입니다. */
         }
 
-        .todo-icon-btn:hover { background: rgba(34, 197, 94, 0.1); transform: translateY(-3px); border-color: var(--color-a); }
-
-        .todo-label { margin-top: 10px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
-
-        /* --- [모달 팝업 디자인] --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.7);
-            display: flex; justify-content: center; align-items: center; z-index: 1000;
-            opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(8px);
+        .todo-label { /* 아이콘 밑에 붙는 "오늘의 일정" 설명글입니다. */
+            margin-top: 10px; /* 아이콘과의 간격입니다. */
+            font-size: 0.85rem; /* 작고 귀엽게 설정합니다. */
+            font-weight: 600; /* 약간 굵게 합니다. */
+            color: var(--text-muted); /* 어두운 회색으로 설정합니다. */
         }
 
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-
-        .modal-content {
-            background: #1e293b; border: 1px solid var(--glass-border); border-radius: 24px;
-            width: 95%; max-width: 450px; padding: 25px; transform: scale(0.9);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* --- [모달 팝업 디자인: 클릭 시 뜨는 상세 창] --- */
+        .modal-overlay { /* 팝업 시 뒷배경을 어둡게 덮어주는 막입니다. */
+            position: fixed; /* 스크롤과 무관하게 화면 전체를 덮도록 고정합니다. */
+            top: 0; left: 0; right: 0; bottom: 0; /* 화면 상하좌우 끝까지 꽉 채웁니다. */
+            background-color: rgba(0, 0, 0, 0.7); /* 70% 불투명도의 검정 배경으로 모달에 시선을 집중시킵니다. */
+            display: flex; /* 모달창을 정중앙에 배치하기 위해 Flexbox를 씁니다. */
+            justify-content: center; align-items: center;
+            z-index: 1000; /* 다른 어떤 요소보다 무조건 맨 위에 뜨도록 우선순위를 높게(1000) 줍니다. */
+            opacity: 0; visibility: hidden; /* 처음에는 투명하게 안 보이도록 숨겨둡니다. */
+            transition: all 0.3s ease; /* 페이드 인/아웃 되도록 부드러운 애니메이션을 줍니다. */
+            backdrop-filter: blur(8px); /* 오버레이 뒤쪽(원래 배경)을 흐리게 만들어 깊이감을 줍니다. */
         }
 
-        .modal-overlay.active .modal-content { transform: scale(1); }
+        .modal-overlay.active { /* 자바스크립트로 이 클래스가 추가되면 모달이 화면에 나타납니다. */
+            opacity: 1; visibility: visible; /* 투명도를 100%로 올리고 클릭 이벤트를 활성화합니다. */
+        }
 
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .modal-close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+        .modal-content { /* 실제 내용이 담기는 모달 팝업 창 본체입니다. */
+            background: #1e293b; /* 벤토 타일보다 조금 더 진한 남색 배경으로 채웁니다. */
+            border: 1px solid var(--glass-border); /* 미세한 테두리로 경계를 살립니다. */
+            border-radius: 24px; /* 모서리를 둥글게 깎아 디자인 통일감을 줍니다. */
+            width: 95%; max-width: 450px; /* 모바일에서 화면을 꽉 채우지 않고 여백을 주며, 최대 450px까지만 커집니다. */
+            padding: 25px; /* 창 안쪽 여백을 넉넉히 줍니다. */
+            transform: scale(0.9); /* 나타나기 전에는 살짝 작게(90% 크기) 시작합니다. */
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 통통 튀어오르는 듯한 쫀득한 팝업 애니메이션 효과입니다. */
+        }
 
-        /* To-do 입력 및 리스트 스타일 */
-        .todo-input-group { display: flex; gap: 8px; margin-bottom: 20px; }
-        .todo-input { flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 10px; padding: 12px; color: white; outline: none; }
-        .todo-add-btn { background: var(--color-a); border: none; border-radius: 10px; padding: 0 15px; font-weight: 700; cursor: pointer; color: #000; }
-        .todo-list { list-style: none; display: flex; flex-direction: column; gap: 8px; max-height: 150px; overflow-y: auto; margin-bottom: 20px; }
-        .calendar-list { list-style: none; display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; }
+        .modal-overlay.active .modal-content { /* 모달이 활성화되었을 때 본체의 모습입니다. */
+            transform: scale(1); /* 크기가 100%로 복구되며 팝업 애니메이션이 완성됩니다. */
+        }
+
+        .modal-header { /* 모달 창의 제목과 닫기 버튼이 있는 머리 부분입니다. */
+            display: flex; /* 양 끝 정렬을 위해 Flex를 씁니다. */
+            justify-content: space-between; /* 제목은 왼쪽, 닫기 버튼은 오른쪽으로 찢어놓습니다. */
+            align-items: center; /* 세로 중앙 정렬을 합니다. */
+            margin-bottom: 15px; /* 아래 내용물과 간격을 둡니다. */
+        }
+
+        .modal-close-btn { /* 모달 창을 닫는 X 버튼입니다. */
+            background: none; border: none; /* 기본 버튼의 회색 배경과 테두리를 없앱니다. */
+            color: var(--text-muted); /* 덜 튀는 회색으로 설정합니다. */
+            font-size: 1.5rem; /* X 기호를 크게 만듭니다. */
+            cursor: pointer; /* 클릭할 수 있다는 것을 손가락 커서로 알립니다. */
+        }
+
+        /* --- [모달 내부: 보안 암호, 할 일 입력 및 리스트 스타일] --- */
+        .secret-key-group { /* 오빠의 암호를 입력받는 보안 구역 스타일입니다. */
+            background: rgba(34, 197, 94, 0.05); /* 말차색이 아주 살짝 도는 배경입니다. */
+            padding: 10px; /* 내부 여백입니다. */
+            border-radius: 12px; /* 둥근 모서리입니다. */
+            margin-bottom: 15px; /* 아래 입력창과의 간격입니다. */
+            border: 1px solid rgba(34, 197, 94, 0.1); /* 테두리에 말차색 포인트를 줍니다. */
+        }
+
+        .todo-input-group { /* 할 일을 직접 타이핑하는 입력창 묶음입니다. */
+            display: flex; gap: 8px; margin-bottom: 20px; /* 가로 배치하고 간격을 줍니다. */
+        }
+
+        .todo-input { /* 글씨를 치는 input 창 자체입니다. */
+            flex: 1; /* 가로 남는 공간을 다 차지합니다. */
+            background: rgba(0,0,0,0.2); /* 살짝 어둡게 해서 구분감을 줍니다. */
+            border: 1px solid var(--glass-border); /* 얇은 테두리입니다. */
+            border-radius: 10px; padding: 12px; color: white; outline: none; /* 타이핑 텍스트 색상 및 포커스 시 생기는 기본 외곽선을 없앱니다. */
+        }
+
+        .todo-add-btn { /* 수동 할 일 및 암호 추가/저장 버튼입니다. */
+            background: var(--color-a); border: none; border-radius: 10px; /* 말차색 배경에 둥근 모서리를 줍니다. */
+            padding: 0 15px; font-weight: 700; cursor: pointer; color: #000; /* 검은색 굵은 글씨로 가독성을 높입니다. */
+        }
+
+        .todo-list { /* 브라우저에 저장된 수동 할 일 리스트가 나열되는 <ul> 태그 영역입니다. */
+            list-style: none; display: flex; flex-direction: column; gap: 8px; /* 기본 점을 없애고 세로로 쌓습니다. */
+            max-height: 150px; overflow-y: auto; margin-bottom: 20px; /* 내용이 많아지면 스크롤이 생기게 높이를 제한합니다. */
+        }
+
+        .calendar-list { /* 구글 캘린더에서 가져온 일정이 나열되는 영역입니다. */
+            list-style: none; display: flex; flex-direction: column; gap: 8px;
+            max-height: 200px; overflow-y: auto; /* 구글 일정은 조금 더 길게 보여줍니다. */
+        }
+
+        .todo-item { /* 개별 수동 할 일 항목(li) 한 줄의 디자인입니다. */
+            display: flex; justify-content: space-between; align-items: center; /* 텍스트는 좌측, 삭제버튼은 우측 배치합니다. */
+            background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; /* 박스 디자인을 적용합니다. */
+        }
+
+        .calendar-item { /* 개별 구글 일정 항목의 디자인입니다. */
+            display: flex; flex-direction: column; /* 시간과 제목을 위아래로 배치합니다. */
+            background: rgba(34, 197, 94, 0.05); /* 구글 일정은 말차색 배경을 연하게 깝니다. */
+            padding: 12px; border-radius: 12px; 
+            border-left: 4px solid var(--color-a); /* 왼쪽에 굵은 말차색 선을 그어 캘린더 일정임을 강조합니다. */
+        }
+
+        .todo-text { /* 할 일 및 일정의 제목 글씨 크기입니다. */
+            font-size: 0.95rem; 
+        }
         
-        /* 암호 보안 구역 스타일 */
-        .secret-key-group { background: rgba(34, 197, 94, 0.05); padding: 10px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(34, 197, 94, 0.1); }
-
-        .todo-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; }
-        .calendar-item { display: flex; flex-direction: column; background: rgba(34, 197, 94, 0.05); padding: 12px; border-radius: 12px; border-left: 4px solid var(--color-a); }
+        .completed .todo-text { /* 완료 처리된 항목에 취소선을 긋고 색을 흐리게 바꿉니다. */
+            text-decoration: line-through; color: var(--text-muted); 
+        }
         
-        .todo-text { font-size: 0.95rem; }
-        .completed .todo-text { text-decoration: line-through; color: var(--text-muted); }
-        .todo-delete-btn { color: #f43f5e; background: none; border: none; cursor: pointer; font-size: 0.8rem; }
+        .todo-delete-btn { /* 수동 할 일 삭제 버튼 디자인입니다. */
+            color: #f43f5e; background: none; border: none; cursor: pointer; font-size: 0.8rem; /* 빨간색 텍스트 버튼으로 만듭니다. */
+        }
         
-        .todo-time { font-size: 0.75rem; color: var(--color-a); margin-bottom: 4px; font-weight: 600; }
-        .section-title { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .loading-text { text-align: center; color: var(--text-muted); padding: 10px; font-size: 0.8rem; }
+        .todo-time { /* 구글 캘린더 일정의 시간 글씨 디자인입니다. */
+            font-size: 0.75rem; color: var(--color-a); margin-bottom: 4px; font-weight: 600; /* 말차색으로 작고 굵게 표시합니다. */
+        }
+        
+        .section-title { /* 구글 캘린더 리스트 위에 붙는 구분선과 제목입니다. */
+            font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; 
+            padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); /* 위쪽에 연한 선을 긋습니다. */
+        }
+        
+        .loading-text { /* 데이터를 불러올 때 나오는 안내 텍스트 디자인입니다. */
+            text-align: center; color: var(--text-muted); padding: 10px; font-size: 0.8rem; /* 중앙 정렬하고 흐리게 보여줍니다. */
+        }
 
     </style>
 </head>
 <body>
 
-    <div class="bento-container"> <!-- 전체 구역 바구니 -->
+    <div class="bento-container"> <!-- 4개의 타일을 감싸는 메인 그리드 바구니입니다. -->
         
-        <!-- [A구역] 날씨 & To-do: 기상청 API 및 구글 일정 통합 -->
+        <!-- [A구역] 날씨 & To-do: 오빠가 기획한 스마트 기능이 집약된 핵심 타일입니다. -->
         <div class="bento-item" id="zone-a">
-            <div class="bento-title">
-                <div class="zone-indicator"></div>
+            <div class="bento-title"> <!-- 타일 상단 제목 -->
+                <div class="zone-indicator"></div> <!-- 말차색 점 인디케이터 -->
                 날씨 & To-do
             </div>
             
             <div class="a-zone-body">
-                <!-- 좌측: 기상청 실시간 정보가 표시됩니다. -->
+                <!-- [좌측] 기상청에서 받아온 실시간 날씨 데이터가 이 곳에 동적으로 채워집니다. -->
                 <div class="weather-section" id="weather-area">
-                    <div id="w-icon" class="weather-icon">⌛</div>
-                    <div id="w-temp" class="weather-val">--</div>
-                    <div class="weather-label">현재 기온</div>
+                    <div id="w-icon" class="weather-icon">⌛</div> <!-- 날씨를 분석중일 때 모래시계가 뜹니다. -->
+                    <div id="w-temp" class="weather-val">--</div> <!-- 기온 숫자가 들어갈 자리입니다. -->
+                    <div class="weather-label">현재 기온</div> <!-- 고정 라벨입니다. -->
                 </div>
 
-                <!-- 우측: 오늘의 일정을 확인하는 버튼입니다. -->
+                <!-- [우측] 일정을 확인하고 추가하는 모달 창을 띄우는 큼직한 아이콘 버튼입니다. -->
                 <div class="todo-section">
                     <div class="todo-icon-btn" id="open-todo-btn">
+                        <!-- 체크리스트 모양의 예쁜 SVG 벡터 아이콘입니다. -->
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M9 11l3 3L22 4"></path>
                             <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
@@ -209,134 +327,168 @@
             </div>
         </div>
 
-        <!-- [B구역] 나의 유니버스 (V1 복구) -->
+        <!-- [B구역] 나의 유니버스: 최초 기획 V1 디자인으로 완벽하게 복구했습니다. -->
         <div class="bento-item" id="zone-b">
             <div class="bento-title">
-                <div class="zone-indicator"></div>
+                <div class="zone-indicator"></div> <!-- 앰버색 점 -->
                 나의 유니버스
             </div>
-            <div class="bento-desc">일상과 사진이 담길 공간입니다.</div>
+            <div class="bento-desc">일상과 사진이 담길 공간입니다.</div> <!-- V1 설명 문구 -->
         </div>
 
-        <!-- [C구역] 엑기스 뉴스 (V1 복구) -->
+        <!-- [C구역] 엑기스 뉴스: 최소 기획 V1 디자인으로 완벽하게 복구했습니다. -->
         <div class="bento-item" id="zone-c">
             <div class="bento-title">
-                <div class="zone-indicator"></div>
+                <div class="zone-indicator"></div> <!-- 라벤더색 점 -->
                 엑기스 뉴스
             </div>
-            <div class="bento-desc">관심 있는 RSS 피드가 연동될 예정입니다.</div>
+            <div class="bento-desc">관심 있는 RSS 피드가 연동될 예정입니다.</div> <!-- V1 설명 문구 -->
         </div>
 
-        <!-- [D구역] 개발자 패널 (V1 복구) -->
+        <!-- [D구역] 개발자 패널: 최초 기획 V1 디자인으로 완벽하게 복구했습니다. -->
         <div class="bento-item" id="zone-d">
             <div class="bento-title">
-                <div class="zone-indicator"></div>
+                <div class="zone-indicator"></div> <!-- 심해 파랑색 점 -->
                 개발자 패널
             </div>
-            <div class="bento-desc">서버 상태와 도구들을 배치합니다.</div>
+            <div class="bento-desc">서버 상태와 도구들을 배치합니다.</div> <!-- V1 설명 문구 -->
         </div>
     </div>
 
-    <!-- [A구역 모달] 일정 및 할 일 관리 창 -->
+    <!-- === [A구역 모달 팝업] 일정 버튼 클릭 시 뜨는 숨겨진 창입니다. === -->
     <div class="modal-overlay" id="modal-a">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header"> <!-- 팝업 상단 제목 -->
                 <div class="bento-title" style="margin-bottom:0; font-size: 1rem;">
                     <div class="zone-indicator" style="background-color: var(--color-a);"></div>
                     미션 및 일정 관리
                 </div>
-                <button class="modal-close-btn" id="close-modal-a">✕</button>
+                <button class="modal-close-btn" id="close-modal-a">✕</button> <!-- 닫기 버튼 -->
             </div>
             
             <div class="modal-body">
-                <!-- 보안 암호 설정 영역 -->
+                <!-- [1. 보안 암호 구역] 오빠가 정한 GAS 암호를 브라우저에 저장하는 입력칸입니다. 개인정보 보호의 핵심입니다. -->
                 <div class="secret-key-group">
                     <div style="font-size: 0.75rem; color: var(--color-a); margin-bottom: 5px;">🗝️ 포털 암호 설정 (GAS 연동용)</div>
                     <div style="display: flex; gap: 5px;">
+                        <!-- 비밀번호 타입(password)으로 하여 입력 시 화면에 노출되지 않게 합니다. -->
                         <input type="password" id="gas-secret-input" class="todo-input" style="padding: 8px;" placeholder="암호를 입력하세요">
                         <button class="todo-add-btn" id="save-secret-btn" style="padding: 0 10px; font-size: 0.8rem;">저장</button>
                     </div>
                 </div>
 
-                <!-- ⭐ [할 일 입력창] 여기서 할 일을 직접 추가하세요! -->
+                <!-- ⭐⭐⭐ [2. 수동 할 일 입력창] 오빠가 찾던 바로 그 입력창입니다! 모달 중앙 명당 자리에 배치했습니다. ⭐⭐⭐ -->
                 <div class="todo-input-group">
                     <input type="text" id="todo-input" class="todo-input" placeholder="새로운 미션을 직접 입력하세요">
                     <button class="todo-add-btn" id="todo-add-btn">추가</button>
                 </div>
 
-                <!-- 수동 할 일 리스트 (로컬스토리지 저장) -->
+                <!-- [3. 수동 할 일 리스트] 직접 입력해서 브라우저 캐시(localStorage)에 저장된 목록이 나타납니다. -->
                 <ul class="todo-list" id="todo-list"></ul>
 
-                <!-- 구글 캘린더 일정 리스트 -->
+                <!-- [4. 구글 캘린더 리스트] GAS를 통해 구글 서버에서 실시간으로 긁어온 일정이 나타납니다. -->
                 <div class="section-title">Google Calendar 일정 (최근 7일)</div>
                 <ul class="calendar-list" id="calendar-list">
-                    <div class="loading-text">암호를 저장하면 일정을 불러옵니다.</div>
+                    <div class="loading-text">암호를 저장하면 일정을 불러옵니다.</div> <!-- 초기 안내 문구 -->
                 </ul>
             </div>
         </div>
     </div>
 
-    <script> /* 자바스크립트 영역: 기상청 좌표 변환 및 데이터 통신 로직 */
+    <script> /* 자바스크립트 영역: 기상청 API 통신, 위치 추적, 구글 캘린더 연동 등 두뇌 역할을 합니다. */
         
-        // --- [설정] 오빠의 구글 앱 스크립트(GAS) URL ---
+        // --- [1. 핵심 설정] 오빠가 만들어 배포한 구글 앱스 스크립트(GAS)의 실제 URL 주소입니다. ---
         const GAS_APP_URL = 'https://script.google.com/macros/s/AKfycbzbyEwnDASgOmCMFzDEn6FbP3tP4yc9tXNsPchemQipFgB5zcOB30vZo3Dmq44FyvY2Tg/exec'; 
 
-        // --- DOM 요소 선택 ---
-        const openTodoBtn = document.getElementById('open-todo-btn');
-        const modalA = document.getElementById('modal-a');
-        const closeModalBtn = document.getElementById('close-modal-a');
-        const todoInput = document.getElementById('todo-input');
-        const todoAddBtn = document.getElementById('todo-add-btn');
-        const todoList = document.getElementById('todo-list');
-        const calendarList = document.getElementById('calendar-list');
-        const secretInput = document.getElementById('gas-secret-input');
-        const saveSecretBtn = document.getElementById('save-secret-btn');
+        // --- [2. DOM 요소 선택] HTML에 있는 태그들을 자바스크립트 변수로 가져와서 조작할 준비를 합니다. ---
+        const openTodoBtn = document.getElementById('open-todo-btn'); // 일정 열기 아이콘
+        const modalA = document.getElementById('modal-a'); // 모달창 배경 오버레이
+        const closeModalBtn = document.getElementById('close-modal-a'); // 모달 닫기 버튼
+        const todoInput = document.getElementById('todo-input'); // 수동 할 일 텍스트 입력칸
+        const todoAddBtn = document.getElementById('todo-add-btn'); // 할 일 추가 버튼
+        const todoList = document.getElementById('todo-list'); // 수동 할 일 목록 영역
+        const calendarList = document.getElementById('calendar-list'); // 구글 일정 목록 영역
+        const secretInput = document.getElementById('gas-secret-input'); // 암호 입력칸
+        const saveSecretBtn = document.getElementById('save-secret-btn'); // 암호 저장 버튼
 
-        // --- 모달 제어 로직 ---
+        // --- [3. 모달 제어 로직] 팝업을 열고 닫는 동작을 세팅합니다. ---
         openTodoBtn.addEventListener('click', () => { 
-            modalA.classList.add('active');
-            todoInput.focus();
+            modalA.classList.add('active'); // 모달에 active 클래스를 붙여 화면에 보이게 합니다.
+            todoInput.focus(); // 팝업이 뜨자마자 수동 할 일을 바로 적을 수 있게 커서를 깜빡이게 합니다.
+            
+            // 브라우저 캐시(localStorage)에 저장해둔 암호가 있는지 확인합니다.
             const savedKey = localStorage.getItem('v2_gas_secret');
             if (savedKey) {
-                secretInput.value = savedKey;
-                fetchCalendarEvents(); 
+                secretInput.value = savedKey; // 암호칸에 비밀번호를 채워줍니다.
+                fetchCalendarEvents(); // 암호가 있다면 곧바로 구글 캘린더 일정을 긁어옵니다.
             }
         });
 
+        // 닫기 버튼 누르면 닫기
         closeModalBtn.addEventListener('click', () => { modalA.classList.remove('active'); });
+        // 모달 바깥쪽의 어두운 배경을 눌러도 편하게 닫히게 합니다.
         modalA.addEventListener('click', (e) => { if (e.target === modalA) modalA.classList.remove('active'); });
 
-        // --- PART 0: 보안 및 수동 할 일 (localStorage 기반) ---
+        // --- [4. 보안 암호 저장 로직] 오빠의 비밀번호를 안전하게 보관합니다. ---
         saveSecretBtn.addEventListener('click', () => {
-            const key = secretInput.value.trim();
+            const key = secretInput.value.trim(); // 앞뒤 공백을 자릅니다.
             if (key) {
+                // 브라우저만 기억할 수 있는 공간에 암호를 저장합니다. (서버로 전송되지 않아 1차적으로 안전합니다)
                 localStorage.setItem('v2_gas_secret', key);
+                
+                // 암호를 저장하자마자 일정과 날씨를 모두 다시 불러오라고 명령합니다.
                 fetchCalendarEvents();
-                initWeather(); // 암호 저장 시 날씨도 새로고침
+                initWeather(); 
             }
         });
 
+        // --- [5. 수동 할 일 로직 (localStorage 캐시 활용)] 유지보수 비용 0원 달성의 핵심입니다. ---
+        // 브라우저 저장소에서 기존 목록을 가져오거나, 처음 접속했다면 빈 배열([])을 만듭니다.
         let todos = JSON.parse(localStorage.getItem('v2_portal_todos')) || [];
+
+        // 데이터가 변할 때마다 브라우저 캐시에 영구 저장하는 함수입니다.
         function save() { localStorage.setItem('v2_portal_todos', JSON.stringify(todos)); }
+
+        // 수동 할 일 목록을 지우고 HTML로 새로 그려주는 렌더링 함수입니다.
         function renderTodos() {
-            todoList.innerHTML = '';
+            todoList.innerHTML = ''; // 찌꺼기 방지를 위해 일단 비웁니다.
             todos.forEach((todo, idx) => {
-                const li = document.createElement('li');
-                li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
-                li.innerHTML = `<div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="toggle(${idx})"><input type="checkbox" ${todo.completed ? 'checked' : ''} style="cursor:pointer;"><span class="todo-text">${todo.text}</span></div><button class="todo-delete-btn" onclick="del(${idx})">삭제</button>`;
-                todoList.appendChild(li);
+                const li = document.createElement('li'); // 새로운 항목(li) 태그를 만듭니다.
+                li.className = `todo-item ${todo.completed ? 'completed' : ''}`; // 완료되었으면 회색 취소선 클래스를 붙입니다.
+                // 체크박스, 텍스트, 삭제 버튼이 담긴 한 줄을 조립합니다.
+                li.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="toggle(${idx})">
+                        <input type="checkbox" ${todo.completed ? 'checked' : ''} style="cursor:pointer;">
+                        <span class="todo-text">${todo.text}</span>
+                    </div>
+                    <button class="todo-delete-btn" onclick="del(${idx})">삭제</button>
+                `;
+                todoList.appendChild(li); // 조립이 끝난 항목을 실제 화면 리스트에 붙여 넣습니다.
             });
         }
+
+        // 입력창의 글씨를 가져와서 할 일 목록 맨 위에 추가하는 함수입니다.
         function add() {
             const val = todoInput.value.trim();
-            if (val) { todos.unshift({ text: val, completed: false }); todoInput.value = ''; save(); renderTodos(); }
+            if (val) { // 빈칸이 아닐 때만
+                todos.unshift({ text: val, completed: false }); // 배열 맨 앞(unshift)에 새 할 일을 넣습니다.
+                todoInput.value = ''; // 입력창을 다시 텅 비워줍니다.
+                save(); renderTodos(); // 저장하고 화면을 다시 그립니다.
+            }
         }
+
+        // 체크박스를 누를 때 완료/미완료 상태를 반대로(toggle) 뒤집습니다.
         window.toggle = (idx) => { todos[idx].completed = !todos[idx].completed; save(); renderTodos(); };
+        
+        // 삭제 버튼을 누르면 배열에서 그 항목을 잘라내서(splice) 날려버립니다.
         window.del = (idx) => { todos.splice(idx, 1); save(); renderTodos(); };
+
+        // 추가 버튼 클릭 이벤트와, 입력창에서 엔터(Enter) 키보드를 쳤을 때 동작하게 연결합니다.
         todoAddBtn.addEventListener('click', add);
         todoInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') add(); });
 
-        // --- PART 1: 기상청 좌표 변환 수학 공식 (위경도 -> 격자 nx, ny) ---
+        // --- [6. 기상청 격자 좌표 변환 공식 (위경도 -> X/Y 좌표)] ---
+        // 브라우저 GPS(위경도)를 기상청 서버가 알아들을 수 있는 엑셀 칸(nx, ny) 번호로 바꿔주는 복잡한 수학 공식입니다.
         function dfs_xy_conv(v1, v2) {
             const RE = 6371.00877; const GRID = 5.0; const SLAT1 = 30.0; const SLAT2 = 60.0;
             const OLON = 126.0; const OLAT = 38.0; const XO = 43; const YO = 136;
@@ -357,21 +509,29 @@
             return { x: Math.floor(ra * Math.sin(theta) + XO + 0.5), y: Math.floor(ro - ra * Math.cos(theta) + YO + 0.5) };
         }
 
-        // --- PART 2: 기상청 및 캘린더 실시간 연동 ---
+        // --- [7. 구글 캘린더 실시간 연동 로직] ---
         async function fetchCalendarEvents() {
-            const secretKey = localStorage.getItem('v2_gas_secret');
-            if (!secretKey) return;
+            const secretKey = localStorage.getItem('v2_gas_secret'); // 저장된 암호를 꺼냅니다.
+            if (!secretKey) return; // 암호가 없으면 작동을 멈춥니다.
+            
             try {
+                // 구글 앱스 스크립트(GAS) 서버로 암호를 보내면서 일정을 달라고 요청(fetch)합니다.
                 const response = await fetch(`${GAS_APP_URL}?key=${secretKey}`, { method: 'GET', mode: 'cors', redirect: 'follow' });
-                const data = await response.json();
+                const data = await response.json(); // 응답받은 데이터를 자바스크립트 객체로 해석합니다.
+                
+                // 만약 GAS 코드에서 암호가 틀렸다는 등의 에러를 보냈다면 빨간 글씨로 출력합니다.
                 if (data.error) { calendarList.innerHTML = `<div class="loading-text" style="color:#f43f5e;">${data.error}</div>`; return; }
-                renderCalendar(data);
-            } catch (error) { calendarList.innerHTML = '<div class="loading-text">일정 로드 실패</div>'; }
+                
+                renderCalendar(data); // 에러가 없다면 일정을 화면에 그립니다.
+            } catch (error) { 
+                calendarList.innerHTML = '<div class="loading-text">일정 로드 실패. (CORS 에러 혹은 배포 설정 문제)</div>'; 
+            }
         }
 
+        // 가져온 일정을 HTML 리스트로 그려주는 헬퍼 함수입니다.
         function renderCalendar(events) {
             calendarList.innerHTML = '';
-            if (!events || events.length === 0) { calendarList.innerHTML = '<div class="loading-text">일정이 없습니다.</div>'; return; }
+            if (!events || events.length === 0) { calendarList.innerHTML = '<div class="loading-text">향후 7일간 일정이 없습니다. 편안한 하루 보내세요!</div>'; return; }
             events.forEach(event => {
                 const li = document.createElement('li');
                 li.className = 'calendar-item';
@@ -380,26 +540,45 @@
             });
         }
 
+        // --- [8. 기상청 실시간 날씨 연동 로직] ---
         async function initWeather() {
             const secretKey = localStorage.getItem('v2_gas_secret');
+            // 암호가 없으면 날씨 칸에 열쇠 아이콘을 띄워서 암호 입력을 유도합니다.
             if (!secretKey) { document.getElementById('w-temp').innerText = "🔑"; return; }
 
+            // 브라우저의 GPS를 켜서 오빠의 현재 위치(위도, 경도)를 허락받고 가져옵니다.
             navigator.geolocation.getCurrentPosition(async (pos) => {
+                // 가져온 위경도를 위에서 만든 공식을 사용해 기상청 전용 격자 좌표(nx, ny)로 변환합니다.
                 const grid = dfs_xy_conv(pos.coords.latitude, pos.coords.longitude);
                 try {
+                    // 구글 앱스 스크립트 서버를 우회 통로로 삼아(CORS 에러 방지), 기상청에 내 격자 좌표의 날씨를 물어봅니다.
                     const response = await fetch(`${GAS_APP_URL}?key=${secretKey}&type=weather&nx=${grid.x}&ny=${grid.y}`, { method: 'GET', mode: 'cors', redirect: 'follow' });
                     const data = await response.json();
+                    
+                    // 데이터가 무사히 도착했고, 그 안에 현재 기온(T1H)이 있다면
                     if (data.T1H) {
-                        document.getElementById('w-temp').innerText = data.T1H + "°";
-                        const icons = ["☀️", "🌧️", "🌨️", "❄️", "🌦️"]; // 강수 형태에 따른 매칭
+                        document.getElementById('w-temp').innerText = data.T1H + "°"; // 왼쪽 화면에 기온을 큼직하게 띄웁니다.
+                        
+                        // 강수 형태(PTY) 값에 맞춰서 날씨 이모지를 바꿉니다. (0:맑음, 1:비, 2:비/눈, 3:눈, 4:소나기)
+                        const icons = ["☀️", "🌧️", "🌨️", "❄️", "🌦️"]; 
                         document.getElementById('w-icon').innerText = icons[parseInt(data.PTY)] || "🌤️";
+                    } else if (data.error) {
+                        document.getElementById('w-temp').innerText = "ERR"; // 통신 중 내부 에러 발생
+                        console.error(data.error);
                     }
-                } catch (e) { document.getElementById('w-temp').innerText = "ERR"; }
-            }, () => { document.getElementById('w-temp').innerText = "LOC?"; });
+                } catch (e) { 
+                    document.getElementById('w-temp').innerText = "ERR"; // 네트워크 통신 자체가 실패
+                }
+            }, () => { 
+                // 만약 오빠가 위치 정보 제공을 '거부'했다면 물음표를 띄웁니다.
+                document.getElementById('w-temp').innerText = "LOC?"; 
+            });
         }
 
-        renderTodos();
-        initWeather(); // 페이지 로드 시 날씨 실행
+        // --- [9. 최초 실행] 페이지가 열리자마자 바로 실행되는 함수들입니다. ---
+        renderTodos(); // 로컬스토리지에 있는 수동 할 일을 먼저 그려놓습니다.
+        initWeather(); // GPS를 잡고 기상청 날씨를 긁어오기 시작합니다.
+
     </script>
 </body>
 </html>
